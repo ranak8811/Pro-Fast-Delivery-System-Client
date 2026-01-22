@@ -1,20 +1,24 @@
 import React from "react";
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import authImg from "../assets/authImage.png";
 import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
 
 const AuthLayout = () => {
   return (
-    <div className="p-12 bg-base-200">
-      <div>
-        <ProFastLogo></ProFastLogo>
+    <div className="min-h-screen bg-base-200 flex flex-col justify-center items-center">
+      <div className="absolute top-4 left-4">
+        <ProFastLogo />
       </div>
-      <div className="hero-content flex-col lg:flex-row-reverse">
+      <div className="hero-content flex-col lg:flex-row-reverse gap-12 items-center">
         <div className="flex-1">
-          <img src={authImg} className="max-w-sm rounded-lg shadow-2xl" />
+          <img
+            src={authImg}
+            className="max-w-md rounded-lg shadow-2xl"
+            alt="Authentication"
+          />
         </div>
         <div className="flex-1">
-          <Outlet></Outlet>
+          <Outlet />
         </div>
       </div>
     </div>

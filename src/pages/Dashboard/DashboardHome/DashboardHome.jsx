@@ -1,15 +1,15 @@
 import React from "react";
-import useUserRole from "../../../hooks/useUserRole";
+import useAuth from "../../../hooks/useAuth";
 import Loading from "../../../components/Loading";
 import UserDashboard from "./UserDashboard";
 import RiderDashboard from "./RiderDashboard";
 import AdminDashboard from "./AdminDashboard";
-import Forbidden from "../../Forbidden/Forbidden";
+import Forbidden from "../../../components/Forbidden";
 
 const DashboardHome = () => {
-  const { role, roleLoading } = useUserRole();
+  const { role, loading } = useAuth();
 
-  if (roleLoading) {
+  if (loading) {
     return <Loading></Loading>;
   }
 

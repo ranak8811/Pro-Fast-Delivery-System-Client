@@ -19,7 +19,7 @@ const MyEarnings = () => {
     enabled: !!email,
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `/rider/completed-parcels?email=${email}`,
+        `/business/rider/completed-parcels?email=${email}`,
       );
       return res.data;
     },

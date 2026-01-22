@@ -1,19 +1,16 @@
 import React from "react";
 import useAuth from "../hooks/useAuth";
-import useUserRole from "../hooks/useUserRole";
+import Forbidden from "../components/Forbidden";
 
 const RiderRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-  const { role, roleLoading } = useUserRole();
+  const { user, role, loading } = useAuth();
 
-  if (loading || roleLoading) {
+  if (loading) {
     return <span className="loading loading-spinner loading-xl"></span>;
   }
 
   if (!user || role !== "rider") {
-    return (
-      <Navigate state={{ from: location.pathname }} to="/forbidden"></Navigate>
-    );
+    return <Forbidden />;
   }
 
   return children;

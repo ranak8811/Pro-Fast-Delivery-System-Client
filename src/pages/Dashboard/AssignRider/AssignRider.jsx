@@ -20,7 +20,7 @@ const AssignRider = () => {
     queryKey: ["assignableParcels"],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        "/parcels?payment_status=paid&delivery_status=not_collected",
+        "/business?payment_status=paid&delivery_status=not_collected",
       );
       // Sort oldest first
       return res.data.sort(
@@ -32,7 +32,7 @@ const AssignRider = () => {
   const { mutateAsync: assignRider } = useMutation({
     mutationFn: async ({ parcelId, rider }) => {
       setSelectedRider(rider);
-      const res = await axiosSecure.patch(`/parcels/${parcelId}/assign`, {
+      const res = await axiosSecure.patch(`/business/${parcelId}/assign`, {
         riderId: rider._id,
         riderEmail: rider.email,
         riderName: rider.name,
@@ -64,7 +64,7 @@ const AssignRider = () => {
     setRiders([]);
 
     try {
-      const res = await axiosSecure.get("/riders/available", {
+      const res = await axiosSecure.get("/employee/available", {
         params: {
           district: parcel.sender_center, // match with rider.district
         },

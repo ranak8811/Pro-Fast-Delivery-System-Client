@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "../SocialLogin /SocialLogin";
 import axios from "axios";
 import useAxios from "../../../hooks/useAxios";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const {
@@ -18,8 +19,10 @@ const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const from = location.state?.from || "/";
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data) => {
+    const toastId = toast.loading("Creating account...");
     console.log(data);
     console.log(createUser);
     createUser(data.email, data.password)
@@ -46,14 +49,19 @@ const Register = () => {
         updateUserProfile(userProfile)
           .then(() => {
             console.log("user profile updated");
+            toast.success("Account created successfully!", { id: toastId });
             navigate(from);
           })
           .catch((error) => {
             console.error(error);
+            toast.error("Failed to update user profile.", { id: toastId });
           });
       })
       .catch((error) => {
         console.error(error);
+        toast.error("Failed to create account. Please try again.", {
+          id: toastId,
+        });
       });
   };
 
@@ -107,12 +115,21 @@ const Register = () => {
             )}
             {/* password field*/}
             <label className="label">Password</label>
-            <input
-              type="password"
-              {...register("password", { required: true, minLength: 6 })}
-              className="input"
-              placeholder="Password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password", { required: true, minLength: 6 })}
+                className="input w-full pr-10"
+                placeholder="Password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-1/2 right-3 -translate-y-1/2"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             {errors.password?.type === "required" && (
               <p className="text-red-500">Password is required</p>
             )}

@@ -1,125 +1,108 @@
-import React from "react";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useAuth from "../../../hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import useTrackingLogger from "../../../hooks/useTrackingLogger";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
-const PendingDeliveries = () => {
+const PendingRiders = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
-  const { logTracking } = useTrackingLogger();
-  const { user } = useAuth();
 
-  // Load parcels assigned to the current rider
-  const { data: parcels = [], isLoading } = useQuery({
-    queryKey: ["riderParcels"],
-    enabled: !!user?.email,
+  // Load Pending Riders
+  const {
+    data: riders = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["pendingRiders"],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/rider/parcels?email=${user.email}`);
+      const res = await axiosSecure.get("/employee/pending");
       return res.data;
     },
   });
 
-  // Mutation for updating parcel status
-  const { mutateAsync: updateStatus } = useMutation({
-    mutationFn: async ({ parcel, status }) => {
-      const res = await axiosSecure.patch(`/parcels/${parcel._id}/status`, {
-        status,
-      });
-      return res.data;
+  // Mutation for updating rider status
+  const { mutateAsync: updateRiderStatus } = useMutation({
+    mutationFn: async ({ id, status, email }) => {
+      await axiosSecure.patch(`/employee/${id}/status`, { status, email });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["riderParcels"]);
+      queryClient.invalidateQueries("pendingRiders");
     },
   });
 
-  const handleStatusUpdate = (parcel, newStatus) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Mark parcel as ${newStatus.replace("_", " ")}?`,
+  // Handle status update
+  const handleUpdateStatus = async (rider, newStatus) => {
+    const confirm = await Swal.fire({
+      title: `Are you sure you want to ${newStatus}?`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Yes, update",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        updateStatus({ parcel, status: newStatus })
-          .then(async () => {
-            Swal.fire("Updated!", "Parcel status updated.", "success");
-
-            // log tracking
-            let trackDetails = `Picked up by ${user.displayName}`;
-            if (newStatus === "delivered") {
-              trackDetails = `Delivered by ${user.displayName}`;
-            }
-            await logTracking({
-              tracking_id: parcel.tracking_id,
-              status: newStatus,
-              details: trackDetails,
-              updated_by: user.email,
-            });
-          })
-          .catch(() => {
-            Swal.fire("Error!", "Failed to update status.", "error");
-          });
-      }
     });
+
+    if (confirm.isConfirmed) {
+      try {
+        await updateRiderStatus({
+          id: rider._id,
+          status: newStatus,
+          email: rider.email,
+        });
+        Swal.fire("Success", `Rider has been ${newStatus}.`, "success");
+      } catch (err) {
+        Swal.fire("Error", `Failed to ${newStatus} rider.`, err);
+      }
+    }
   };
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Pending Deliveries</h2>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : parcels.length === 0 ? (
-        <p className="text-gray-500">No assigned deliveries.</p>
-      ) : (
+      <h2 className="text-2xl font-semibold mb-4">
+        Pending Rider Applications
+      </h2>
+      {isLoading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Failed to load applications.</p>}
+      {!isLoading && !error && (
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
             <thead>
               <tr>
-                <th>Tracking ID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Receiver</th>
-                <th>Receiver Center</th>
-                <th>Cost</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Region</th>
+                <th>District</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {parcels.map((parcel) => (
-                <tr key={parcel._id}>
-                  <td>{parcel.tracking_id}</td>
-                  <td>{parcel.title}</td>
-                  <td>{parcel.type}</td>
-                  <td>{parcel.receiver_name}</td>
-                  <td>{parcel.receiver_center}</td>
-                  <td>৳{parcel.cost}</td>
-                  <td className="capitalize">
-                    {parcel.delivery_status.replace("_", " ")}
-                  </td>
-                  <td>
-                    {parcel.delivery_status === "rider_assigned" && (
-                      <button
-                        className="btn btn-sm btn-primary text-black"
-                        onClick={() => handleStatusUpdate(parcel, "in_transit")}
-                      >
-                        Mark Picked Up
-                      </button>
-                    )}
-                    {parcel.delivery_status === "in_transit" && (
-                      <button
-                        className="btn btn-sm btn-success text-black"
-                        onClick={() => handleStatusUpdate(parcel, "delivered")}
-                      >
-                        Mark Delivered
-                      </button>
-                    )}
+              {riders.map((rider) => (
+                <tr key={rider._id}>
+                  <td>{rider.name}</td>
+                  <td>{rider.email}</td>
+                  <td>{rider.phone}</td>
+                  <td>{rider.region}</td>
+                  <td>{rider.district}</td>
+                  <td className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdateStatus(rider, "active")}
+                      className="btn btn-sm btn-success"
+                    >
+                      <FaCheck /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus(rider, "rejected")}
+                      className="btn btn-sm btn-error"
+                    >
+                      <FaTimes /> Reject
+                    </button>
                   </td>
                 </tr>
               ))}
+              {riders.length === 0 && (
+                <tr>
+                  <td colSpan="6" className="text-center">
+                    No pending applications.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -128,4 +111,4 @@ const PendingDeliveries = () => {
   );
 };
 
-export default PendingDeliveries;
+export default PendingRiders;

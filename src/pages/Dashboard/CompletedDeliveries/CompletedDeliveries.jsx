@@ -14,7 +14,7 @@ const CompletedDeliveries = () => {
     enabled: !!email,
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `/rider/completed-parcels?email=${email}`,
+        `/business/rider/completed-parcels?email=${email}`,
       );
       return res.data;
     },
@@ -32,7 +32,7 @@ const CompletedDeliveries = () => {
   // Mutation for cashout
   const { mutateAsync: cashout } = useMutation({
     mutationFn: async (parcelId) => {
-      const res = await axiosSecure.patch(`/parcels/${parcelId}/cashout`);
+      const res = await axiosSecure.patch(`/business/${parcelId}/cashout`);
       return res.data;
     },
     onSuccess: () => {

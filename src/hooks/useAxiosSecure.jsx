@@ -1,45 +1,53 @@
 import axios from "axios";
 import useAuth from "./useAuth";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 const axiosSecure = axios.create({
-  // baseURL: "http://localhost:5000",
-  baseURL: "https://zap-shift-server-pi-amber.vercel.app",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 const useAxiosSecure = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  axiosSecure.interceptors.request.use(
-    (config) => {
-      config.headers.Authorization = `Bearer ${user.accessToken}`;
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
-
-  axiosSecure.interceptors.response.use(
-    (res) => {
-      return res;
-    },
-    (error) => {
-      // console.log("Inside res interceptor", error.status);
-      const status = error.status;
-      if (status === 403) {
-        return navigate("/forbidden");
-      } else if (status === 401) {
-        logout()
-          .then(() => {
-            navigate("/login");
-          })
-          .catch((err) => console.log(err));
+  useEffect(() => {
+    const requestInterceptor = axiosSecure.interceptors.request.use(
+      async (config) => {
+        if (user) {
+          const token = await user.getIdToken();
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
-    },
-  );
+    );
+
+    const responseInterceptor = axiosSecure.interceptors.response.use(
+      (res) => {
+        return res;
+      },
+      (error) => {
+        const status = error.response?.status;
+        if (status === 401 || status === 403) {
+          logout()
+            .then(() => {
+              navigate("/login");
+            })
+            .catch((err) => console.log(err));
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axiosSecure.interceptors.request.eject(requestInterceptor);
+      axiosSecure.interceptors.response.eject(responseInterceptor);
+    };
+  }, [user, logout, navigate]);
+
   return axiosSecure;
 };
 

@@ -119,7 +119,7 @@ const SendParcel = () => {
 
         console.log("Ready for payment:", parcelData);
 
-        axiosSecure.post("/parcels", parcelData).then(async (res) => {
+        axiosSecure.post("/business", parcelData).then(async (res) => {
           console.log(res.data);
           if (res.data.insertedId) {
             // TODO: redirect to a payment page

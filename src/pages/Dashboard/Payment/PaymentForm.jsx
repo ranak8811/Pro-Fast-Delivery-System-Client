@@ -19,9 +19,9 @@ const PaymentForm = () => {
   const [error, setError] = useState("");
 
   const { isPending, data: parcelInfo = {} } = useQuery({
-    queryKey: ["parcels", parcelId],
+    queryKey: ["business", parcelId],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/parcels/${parcelId}`);
+      const res = await axiosSecure.get(`/business/${parcelId}`);
       return res.data;
     },
   });
@@ -60,7 +60,7 @@ const PaymentForm = () => {
       console.log("payment method", paymentMethod);
 
       // step-2: create payment intent
-      const res = await axiosSecure.post("/create-payment-intent", {
+      const res = await axiosSecure.post("/payment/create-payment-intent", {
         amountInCents,
         parcelId,
       });
@@ -94,7 +94,10 @@ const PaymentForm = () => {
             paymentMethod: result.paymentIntent.payment_method_types,
           };
 
-          const paymentRes = await axiosSecure.post("/payments", paymentData);
+          const paymentRes = await axiosSecure.post(
+            "/payment/payments",
+            paymentData
+          );
           if (paymentRes.data.insertedId) {
             // ✅ Show SweetAlert with transaction ID
             await Swal.fire({

@@ -15,11 +15,11 @@ import {
   FaCheckCircle,
   FaWallet,
 } from "react-icons/fa";
-import useUserRole from "../hooks/useUserRole";
+import useAuth from "../hooks/useAuth";
 
 const DashboardLayout = () => {
-  const { role, roleLoading } = useUserRole();
-  // console.log(role);
+  const { role, loading } = useAuth();
+  console.log(role);
   return (
     <div>
       <div className="drawer lg:drawer-open">
@@ -86,15 +86,15 @@ const DashboardLayout = () => {
                 Track a Package
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/dashboard/profile">
                 <FaUserEdit className="inline-block mr-2" />
                 Update Profile
               </NavLink>
-            </li>
+            </li> */}
 
             {/* rider links */}
-            {!roleLoading && role === "rider" && (
+            {!loading && role === "rider" && (
               <>
                 <li>
                   <NavLink to="/dashboard/pending-deliveries">
@@ -118,7 +118,7 @@ const DashboardLayout = () => {
             )}
 
             {/* admin link */}
-            {!roleLoading && role === "admin" && (
+            {!loading && role === "admin" && (
               <>
                 <li>
                   <NavLink to="/dashboard/assign-rider">

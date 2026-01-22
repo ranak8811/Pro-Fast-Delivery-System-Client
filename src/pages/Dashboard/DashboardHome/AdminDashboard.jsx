@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["parcelStatusCount"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/parcels/delivery/status-count");
+      const res = await axiosSecure.get("/business/delivery/status-count");
       return res.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
