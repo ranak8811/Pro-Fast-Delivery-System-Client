@@ -27,13 +27,15 @@ const PaymentForm = () => {
   });
 
   if (isPending) {
-    return "...loading";
+    return (
+      <div className="flex justify-center items-center h-full">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
   }
 
-  console.log(parcelInfo);
   const amount = parcelInfo.cost;
   const amountInCents = amount * 100;
-  console.log(amountInCents);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,10 +124,22 @@ const PaymentForm = () => {
   };
 
   return (
-    <div>
+    <div className="p-6 max-w-lg mx-auto">
+      <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+        <h2 className="text-2xl font-bold text-[#20363A] mb-4">Payment for Parcel</h2>
+        <div className="space-y-2 text-gray-700">
+          <p><strong>Tracking ID:</strong> {parcelInfo.tracking_id}</p>
+          <p><strong>Title:</strong> {parcelInfo.title}</p>
+          <p><strong>Type:</strong> <span className="capitalize">{parcelInfo.type}</span></p>
+          {parcelInfo.type === "non-document" && (
+            <p><strong>Weight:</strong> {parcelInfo.weight} kg</p>
+          )}
+          <p className="text-xl font-bold mt-4">Amount Due: ৳{parcelInfo.cost}</p>
+        </div>
+      </div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto"
+        className="space-y-4 bg-white p-6 rounded-xl shadow-md w-full"
       >
         <CardElement className="p-2 border rounded"></CardElement>
         <button
@@ -133,7 +147,7 @@ const PaymentForm = () => {
           className="btn btn-primary text-black w-full"
           disabled={!stripe}
         >
-          Pay ${amount}
+          Pay ৳{amount}
         </button>
         {error && <p className="text-red-500">{error}</p>}
       </form>

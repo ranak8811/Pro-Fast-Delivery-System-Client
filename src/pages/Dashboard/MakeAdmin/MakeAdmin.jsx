@@ -14,9 +14,10 @@ const MakeAdmin = () => {
     isFetching,
   } = useQuery({
     queryKey: ["searchedUsers", emailQuery],
-    enabled: !!emailQuery,
+    enabled: !!emailQuery, // Only run query if emailQuery is not empty
     queryFn: async () => {
       const res = await axiosSecure.get(`/users/search?email=${emailQuery}`);
+      console.log(res);
       return res.data;
     },
   });
@@ -55,7 +56,6 @@ const MakeAdmin = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">Make Admin</h2>
-
       <div className="flex gap-2 mb-6 items-center">
         <FaSearch />
         <input
@@ -66,14 +66,12 @@ const MakeAdmin = () => {
           onChange={(e) => setEmailQuery(e.target.value)}
         />
       </div>
-
-      {isFetching && <p>Loading users...</p>}
-
+      {isFetching && emailQuery && <p>Loading users...</p>}{" "}
+      {/* Only show loading if there's an actual query */}
       {!isFetching && users.length === 0 && emailQuery && (
-        <p className="text-gray-500">No users found.</p>
+        <p className="text-gray-500">No users found for "{emailQuery}".</p>
       )}
-
-      {users.length > 0 && (
+      {users.length > 0 && ( // Always show table if users are found, regardless of current emailQuery if it's cleared
         <div className="overflow-x-auto">
           <table className="table w-full table-zebra">
             <thead>
@@ -124,6 +122,12 @@ const MakeAdmin = () => {
           </table>
         </div>
       )}
+      {!emailQuery &&
+        !isFetching && ( // Display a message when search is empty and not fetching
+          <p className="text-gray-500">
+            Start typing an email to search for users.
+          </p>
+        )}
     </div>
   );
 };

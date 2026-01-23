@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react"; // Import useState
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
@@ -10,6 +10,9 @@ const MyParcels = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [selectedParcel, setSelectedParcel] = useState(null); // State for selected parcel data
+
   const { data: parcels = [], refetch } = useQuery({
     queryKey: ["my-parcels", user.email],
     queryFn: async () => {
@@ -18,11 +21,9 @@ const MyParcels = () => {
     },
   });
 
-  console.log(parcels);
-
-  const handleView = (id) => {
-    console.log("View parcel", id);
-    // You could open a modal or navigate to a detail page
+  const handleView = (parcel) => {
+    setSelectedParcel(parcel);
+    setShowModal(true);
   };
 
   const handlePay = (id) => {
@@ -51,6 +52,7 @@ const MyParcels = () => {
   };
 
   const formatDate = (iso) => {
+    if (!iso) return "N/A";
     return new Date(iso).toLocaleString(); // Format: "6/22/2025, 3:11:31 AM"
   };
 
@@ -89,7 +91,7 @@ const MyParcels = () => {
               </td>
               <td className="space-x-2">
                 <button
-                  onClick={() => handleView(parcel._id)}
+                  onClick={() => handleView(parcel)} // Pass the full parcel object
                   className="btn btn-xs btn-outline"
                 >
                   View
@@ -113,13 +115,61 @@ const MyParcels = () => {
           ))}
           {parcels.length === 0 && (
             <tr>
-              <td colSpan="6" className="text-center text-gray-500 py-6">
+              <td colSpan="7" className="text-center text-gray-500 py-6">
                 No parcels found.
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
+      {/* Parcel Details Modal */}
+      {showModal && selectedParcel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full relative">
+            <h2 className="text-2xl font-bold mb-4 text-[#20363A]">Parcel Details</h2>
+            <button
+              onClick={() => setShowModal(false)}
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+            >
+              ✕
+            </button>
+            <div className="space-y-2 text-gray-700">
+              <p><strong>Tracking ID:</strong> {selectedParcel.tracking_id}</p>
+              <p><strong>Title:</strong> {selectedParcel.title}</p>
+              <p><strong>Type:</strong> <span className="capitalize">{selectedParcel.type}</span></p>
+              {selectedParcel.type === "non-document" && (
+                <p><strong>Weight:</strong> {selectedParcel.weight} kg</p>
+              )}
+              <p><strong>Cost:</strong> ৳{selectedParcel.cost}</p>
+              <p><strong>Payment Status:</strong> <span className={`badge ${selectedParcel.payment_status === "paid" ? "badge-success" : "badge-error"}`}>{selectedParcel.payment_status}</span></p>
+              <p><strong>Delivery Status:</strong> <span className="capitalize">{selectedParcel.delivery_status.replace(/_/g, ' ')}</span></p>
+              <p><strong>Created By:</strong> {selectedParcel.created_by}</p>
+              <p><strong>Creation Date:</strong> {formatDate(selectedParcel.creation_date)}</p>
+              
+              <div className="border-t pt-2 mt-2">
+                <h3 className="font-semibold text-lg mt-2">Sender Information</h3>
+                <p><strong>Name:</strong> {selectedParcel.sender_name}</p>
+                <p><strong>Contact:</strong> {selectedParcel.sender_contact}</p>
+                <p><strong>Region:</strong> {selectedParcel.sender_region}</p>
+                <p><strong>Center:</strong> {selectedParcel.sender_center}</p>
+                <p><strong>Address:</strong> {selectedParcel.sender_address}</p>
+                <p><strong>Pickup Instruction:</strong> {selectedParcel.pickup_instruction}</p>
+              </div>
+
+              <div className="border-t pt-2 mt-2">
+                <h3 className="font-semibold text-lg mt-2">Receiver Information</h3>
+                <p><strong>Name:</strong> {selectedParcel.receiver_name}</p>
+                <p><strong>Contact:</strong> {selectedParcel.receiver_contact}</p>
+                <p><strong>Region:</strong> {selectedParcel.receiver_region}</p>
+                <p><strong>Center:</strong> {selectedParcel.receiver_center}</p>
+                <p><strong>Address:</strong> {selectedParcel.receiver_address}</p>
+                <p><strong>Delivery Instruction:</strong> {selectedParcel.delivery_instruction}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

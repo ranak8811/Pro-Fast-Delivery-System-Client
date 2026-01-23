@@ -36,7 +36,7 @@ const DashboardLayout = () => {
   const activeLink = "text-[#4d5502] font-bold underline";
   const normalLink = "hover:text-[#4d5502]";
 
-  const navLinks = (
+  const mainNavLinks = (
     <>
       <li>
         <NavLink
@@ -46,15 +46,6 @@ const DashboardLayout = () => {
         >
           <FaHome className="inline-block mr-2" />
           Home
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/dashboard/my-profile"
-          className={({ isActive }) => (isActive ? activeLink : normalLink)}
-        >
-          <FaUser className="inline-block mr-2" />
-          My Profile
         </NavLink>
       </li>
       <li>
@@ -159,6 +150,21 @@ const DashboardLayout = () => {
           </li>
         </>
       )}
+    </>
+  );
+
+  const bottomNavLinks = (
+    <>
+      <div className="divider mt-auto"></div> {/* Add a divider */}
+      <li>
+        <NavLink
+          to="/dashboard/my-profile"
+          className={({ isActive }) => (isActive ? activeLink : normalLink)}
+        >
+          <FaUser className="inline-block mr-2" />
+          My Profile
+        </NavLink>
+      </li>
       <li>
         <button onClick={handleLogout} className={`w-full text-left py-2 px-4 rounded-md transition-colors duration-200 ${normalLink}`}>
           <FaSignOutAlt className="inline-block mr-2" />
@@ -212,14 +218,17 @@ const DashboardLayout = () => {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+        <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content flex flex-col justify-between">
           {/* Sidebar content here */}
-          <div className="p-4">
-            <Link to="/">
-              <ProFastLogo />
-            </Link>
+          <div>
+            <div className="p-4">
+              <Link to="/">
+                <ProFastLogo />
+              </Link>
+            </div>
+            {mainNavLinks}
           </div>
-          {navLinks}
+          {bottomNavLinks}
         </ul>
       </div>
     </div>

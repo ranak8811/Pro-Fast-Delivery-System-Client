@@ -1,7 +1,7 @@
 import React from "react";
 import liveTracking from "../../../assets/live-tracking.png";
 import safeDelivery from "../../../assets/safe-delivery.png";
-import callCenter from "../../../assets/service.png";
+import callCenter from "../../../assets/call-center-service.png";
 
 const featuresData = [
   {
@@ -31,11 +31,11 @@ const Feature = ({ feature, reverse }) => {
         reverse ? "flex-row-reverse" : ""
       }`}
     >
-      <div className="w-1/2">
+      <div className="w-1/2 h-48 flex items-center justify-center">
         <img
           src={feature.img}
           alt={feature.title}
-          className="max-w-full rounded-lg"
+          className="max-w-full max-h-full object-contain rounded-lg"
         />
       </div>
       <div
@@ -58,11 +58,12 @@ const Features = () => {
   return (
     <section className="space-y-8 bg-gray-50 py-16 px-4">
       <div className="text-center text-[#20363A] mb-12">
-          <h2 className="text-4xl font-bold mb-4">Why Choose Us?</h2>
-          <p className="text-lg max-w-3xl mx-auto">
-            We provide the best-in-class services to ensure your parcels are delivered safely and on time.
-          </p>
-        </div>
+        <h2 className="text-4xl font-bold mb-4">Why Choose Us?</h2>
+        <p className="text-lg max-w-3xl mx-auto">
+          We provide the best-in-class services to ensure your parcels are
+          delivered safely and on time.
+        </p>
+      </div>
       <div className="container mx-auto space-y-8">
         {featuresData.map((feature, index) => (
           <Feature key={index} feature={feature} reverse={index % 2 !== 0} />

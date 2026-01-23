@@ -228,11 +228,13 @@ const SendParcel = () => {
                 {...register("sender_name", { required: true })}
                 className="input input-bordered w-full"
                 placeholder="Name"
+                defaultValue={user?.displayName}
               />
               <input
                 {...register("sender_contact", { required: true })}
                 className="input input-bordered w-full"
                 placeholder="Contact"
+                defaultValue={user?.email}
               />
               <select
                 {...register("sender_region", { required: true })}
