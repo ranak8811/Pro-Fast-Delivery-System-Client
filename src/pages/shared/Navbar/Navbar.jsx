@@ -159,6 +159,9 @@ const Navbar = () => {
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow"
               >
                 <li>
+                  <Link to="/dashboard/my-profile">My Profile</Link>
+                </li>
+                <li>
                   <button onClick={handleLogout} className="btn btn-ghost">
                     Logout
                   </button>

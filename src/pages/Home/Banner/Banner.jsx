@@ -8,20 +8,19 @@ import bannerImg3 from "../../../assets/banner/banner3.png";
 
 const Banner = () => {
   return (
-    <Carousel autoPlay={true} infiniteLoop={true}>
-      <div>
-        <img src={bannerImg1} />
-        <p className="legend">Legend 1</p>
-      </div>
-      <div>
-        <img src={bannerImg2} />
-        <p className="legend">Legend 2</p>
-      </div>
-      <div>
-        <img src={bannerImg3} />
-        <p className="legend">Legend 3</p>
-      </div>
-    </Carousel>
+    <div className="w-full">
+      <Carousel autoPlay={true} infiniteLoop={true} showThumbs={false} showStatus={false}>
+        <div>
+          <img src={bannerImg1} alt="Banner 1" className="w-full object-cover" />
+        </div>
+        <div>
+          <img src={bannerImg2} alt="Banner 2" className="w-full object-cover" />
+        </div>
+        <div>
+          <img src={bannerImg3} alt="Banner 3" className="w-full object-cover" />
+        </div>
+      </Carousel>
+    </div>
   );
 };
 

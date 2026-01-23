@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const MyParcels = () => {
   const { user } = useAuth();
@@ -32,33 +32,20 @@ const MyParcels = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirm = await Swal.fire({
-      title: "Are you sure?",
-      text: "This parcel will be permanently deleted!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#e11d48", // red-600
-      cancelButtonColor: "#6b7280", // gray-500
-    });
-    if (confirm.isConfirmed) {
+    const confirm = window.confirm(
+      "Are you sure? This parcel will be permanently deleted!"
+    );
+    if (confirm) {
       try {
         axiosSecure.delete(`/business/${id}`).then((res) => {
           console.log(res.data);
           if (res.data.deletedCount) {
-            Swal.fire({
-              title: "Deleted!",
-              text: "Parcel has been deleted.",
-              icon: "success",
-              timer: 1500,
-              showConfirmButton: false,
-            });
+            toast.success("Parcel has been deleted.");
           }
           refetch();
         });
       } catch (err) {
-        Swal.fire("Error", err.message || "Failed to delete parcel", "error");
+        toast.error(err.message || "Failed to delete parcel");
       }
     }
   };
