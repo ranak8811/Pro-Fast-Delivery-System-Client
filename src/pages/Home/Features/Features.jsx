@@ -27,7 +27,7 @@ const featuresData = [
 const Feature = ({ feature, reverse }) => {
   return (
     <div
-      className={`flex items-center justify-center gap-8 rounded-2xl bg-white p-12 ${
+      className={`flex items-center justify-center gap-8 rounded-2xl bg-white p-8 ${
         reverse ? "flex-row-reverse" : ""
       }`}
     >
@@ -41,8 +41,8 @@ const Feature = ({ feature, reverse }) => {
       <div
         className={`w-1/2 ${
           reverse
-            ? "pr-12 border-r-2 border-dashed border-[#20363A]"
-            : "pl-12 border-l-2 border-dashed border-[#20363A]"
+            ? "pr-8 border-r-2 border-solid border-[#20363A]"
+            : "pl-8 border-l-2 border-solid border-[#20363A]"
         }`}
       >
         <h3 className="mb-4 text-3xl font-bold" style={{ color: "#20363A" }}>
@@ -57,6 +57,12 @@ const Feature = ({ feature, reverse }) => {
 const Features = () => {
   return (
     <section className="space-y-8 bg-gray-50 py-16 px-4">
+      <div className="text-center text-[#20363A] mb-12">
+          <h2 className="text-4xl font-bold mb-4">Why Choose Us?</h2>
+          <p className="text-lg max-w-3xl mx-auto">
+            We provide the best-in-class services to ensure your parcels are delivered safely and on time.
+          </p>
+        </div>
       <div className="container mx-auto space-y-8">
         {featuresData.map((feature, index) => (
           <Feature key={index} feature={feature} reverse={index % 2 !== 0} />

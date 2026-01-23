@@ -15,11 +15,23 @@ import {
   FaCheckCircle,
   FaWallet,
   FaUser,
+  FaSignOutAlt, // Import FaSignOutAlt for logout icon
 } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 
 const DashboardLayout = () => {
-  const { role, loading } = useAuth();
+  const { role, loading, logout } = useAuth(); // Destructure logout from useAuth
+
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error);
+      });
+  };
 
   const activeLink = "text-[#4d5502] font-bold underline";
   const normalLink = "hover:text-[#4d5502]";
@@ -147,13 +159,19 @@ const DashboardLayout = () => {
           </li>
         </>
       )}
+      <li>
+        <button onClick={handleLogout} className={`w-full text-left py-2 px-4 rounded-md transition-colors duration-200 ${normalLink}`}>
+          <FaSignOutAlt className="inline-block mr-2" />
+          Logout
+        </button>
+      </li>
     </>
   );
 
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col items-center justify-center">
+      <div className="drawer-content flex flex-col">
         {/* Page content here */}
         <div className="navbar bg-base-100 lg:hidden">
           <div className="flex-none">

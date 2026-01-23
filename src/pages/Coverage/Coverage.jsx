@@ -10,6 +10,9 @@ const Coverage = () => {
       <h1 className="text-3xl font-bold text-center mb-6">
         We are available in 64 districts
       </h1>
+      <p className="text-center text-gray-600 mb-8">
+        Our services span across all 64 districts of Bangladesh. We are committed to providing reliable and efficient delivery services to every corner of the country. Whether you are in a bustling city or a remote village, we've got you covered.
+      </p>
 
       {/* Later you can add your search box here */}
       {/* <SearchDistrictBox /> */}

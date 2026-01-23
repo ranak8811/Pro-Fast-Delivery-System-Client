@@ -8,8 +8,8 @@ const Footer = () => {
   return (
     <footer className="bg-[#20363A] text-white py-16 px-4">
       <div className="container mx-auto text-center">
-        <div className="flex mx-auto text-white text-center">
-          <ProFastLogo></ProFastLogo>
+        <div className="flex mx-auto text-white text-center justify-center">
+          <ProFastLogo isFooter={true}></ProFastLogo>
         </div>
         <p className="max-w-xl mx-auto my-6">
           Enjoy fast, reliable parcel delivery with real-time tracking and zero
@@ -21,10 +21,10 @@ const Footer = () => {
           <Link to="/" className="hover:text-lime-400 transition-colors">
             Services
           </Link>
-          <Link to="/" className="hover:text-lime-400 transition-colors">
+          <Link to="/coverage" className="hover:text-lime-400 transition-colors">
             Coverage
           </Link>
-          <Link to="/" className="hover:text-lime-400 transition-colors">
+          <Link to="/about" className="hover:text-lime-400 transition-colors">
             About Us
           </Link>
           <Link to="/" className="hover:text-lime-400 transition-colors">

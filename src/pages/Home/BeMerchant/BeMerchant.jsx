@@ -5,7 +5,7 @@ const BeMerchant = () => {
   return (
     <div
       data-aos="zoom-in-up"
-      className="bg-[url('assets/be-a-merchant-bg.png')] bg-no-repeat bg-cover bg-center bg-[#03373D] rounded-4xl p-8 md:p-16 lg:p-20 text-white my-12 mx-4"
+      className="bg-[url('assets/be-a-merchant-bg.png')] bg-no-repeat bg-cover bg-center bg-[#03373D] rounded-4xl p-8 md:p-16 lg:p-20 text-white"
     >
       <div className="hero-content flex-col lg:flex-row-reverse justify-between items-center max-w-screen-xl mx-auto">
         <div className="flex-1 lg:flex-none mb-8 lg:mb-0">
@@ -21,10 +21,10 @@ const BeMerchant = () => {
           </h1>
           <p className="py-6 text-lg leading-relaxed max-w-xl lg:max-w-none mx-auto lg:mx-0">
             We offer the lowest delivery charge with the highest value along
-            with 100% safety of your product. Pathao courier delivers your
+            with 100% safety of your product. ProFast courier delivers your
             parcels in every corner of Bangladesh right on time.
           </p>
-          <button className="btn bg-[#D1E231] text-gray-900 hover:bg-[#a9b828] border-none rounded-full px-8 py-3 text-lg font-semibold transition-all duration-300">
+          <button className="btn bg-lime-400 text-black hover:bg-lime-500 border-none rounded-full px-8 py-3 text-lg font-semibold transition-all duration-300">
             Become A Merchant
           </button>
         </div>

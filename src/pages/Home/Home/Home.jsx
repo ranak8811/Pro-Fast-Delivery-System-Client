@@ -8,7 +8,7 @@ import FAQ from "../FAQ/FAQ";
 
 const Home = () => {
   return (
-    <div>
+    <div className="space-y-20">
       <Banner></Banner>
       <Services></Services>
       <Features></Features>

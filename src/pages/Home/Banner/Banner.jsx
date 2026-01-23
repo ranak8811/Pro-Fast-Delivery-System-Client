@@ -8,16 +8,33 @@ import bannerImg3 from "../../../assets/banner/banner3.png";
 
 const Banner = () => {
   return (
-    <div className="w-full">
-      <Carousel autoPlay={true} infiniteLoop={true} showThumbs={false} showStatus={false}>
+    <div className="w-full mt-4">
+      <Carousel
+        autoPlay={true}
+        infiniteLoop={true}
+        showThumbs={false}
+        showStatus={false}
+      >
         <div>
-          <img src={bannerImg1} alt="Banner 1" className="w-full object-cover" />
+          <img
+            src={bannerImg1}
+            alt="Banner 1"
+            className="w-full object-cover"
+          />
         </div>
         <div>
-          <img src={bannerImg2} alt="Banner 2" className="w-full object-cover" />
+          <img
+            src={bannerImg2}
+            alt="Banner 2"
+            className="w-full object-cover"
+          />
         </div>
         <div>
-          <img src={bannerImg3} alt="Banner 3" className="w-full object-cover" />
+          <img
+            src={bannerImg3}
+            alt="Banner 3"
+            className="w-full object-cover"
+          />
         </div>
       </Carousel>
     </div>

@@ -3,29 +3,29 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const faqData = [
   {
-    question: "How does this posture corrector work?",
+    question: "What areas do you deliver to?",
     answer:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day. Here's how it typically functions: A posture corrector works by providing support and gentle alignment to your shoulders.",
+      "We deliver to all 64 districts of Bangladesh. We have a wide network of delivery agents to ensure that your parcel reaches its destination, no matter where it is.",
   },
   {
-    question: "Is it suitable for all ages and body types?",
+    question: "How long does it take to deliver a parcel?",
     answer:
-      "Yes, our posture correctors are designed to be adjustable and fit a wide range of body types and sizes. We offer different sizes to ensure a comfortable and effective fit for everyone.",
+      "For deliveries within Dhaka, we offer express delivery within 4-6 hours. For the rest of Bangladesh, our standard delivery time is 48-72 hours.",
   },
   {
-    question: "Does it really help with back pain and posture improvement?",
+    question: "How can I track my parcel?",
     answer:
-      "Absolutely. By promoting proper alignment, our posture corrector helps alleviate back pain caused by poor posture. Consistent use can lead to significant improvements in your overall posture and well-being.",
+      "You can track your parcel in real-time using the tracking ID provided to you at the time of booking. Simply enter the tracking ID on our website or mobile app to see the current status of your delivery.",
   },
   {
-    question: "Does it have smart features like vibration alerts?",
+    question: "What is your cash on delivery policy?",
     answer:
-      "Some of our advanced models come with smart features like gentle vibration alerts to remind you to correct your posture whenever you start to slouch. Check the product details for specific features.",
+      "We offer a 100% secure cash on delivery service across Bangladesh. Our agents will collect the payment from the recipient at the time of delivery.",
   },
   {
-    question: "How will I be notified when the product is back in stock?",
+    question: "Do you offer any special services for businesses?",
     answer:
-      "You can sign up for back-in-stock notifications on the product page. We will send you an email as soon as the product is available for purchase again.",
+      "Yes, we offer a range of corporate services, including inventory management, order processing, and fulfillment solutions. Please contact us for a custom quote.",
   },
 ];
 
@@ -40,16 +40,14 @@ const FAQ = () => {
   };
 
   return (
-    <section className="py-20 px-4 bg-[#F0F5F5]">
+    <section className="py-16 px-4 bg-[#F0F5F5]">
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 text-[#20363A]">
-            Frequently Asked Question (FAQ)
+            Frequently Asked Questions
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Enhance posture, mobility, and well-being effortlessly with Posture
-            Pro. Achieve proper alignment, reduce pain, and strengthen your body
-            with ease!
+            Have questions? We're here to help. Here are some of the most common questions we get from our customers.
           </p>
         </div>
 
@@ -80,8 +78,8 @@ const FAQ = () => {
         </div>
 
         <div className="text-center mt-12">
-          <button className="btn bg-lime-400 text-black rounded-full px-8">
-            See More FAQ's <span className="ml-2 bg-black text-white rounded-full p-2">↗</span>
+          <button className="btn bg-lime-400 text-black hover:bg-lime-500 border-none rounded-full px-8 py-3 text-lg font-semibold transition-all duration-300">
+            See More FAQ's
           </button>
         </div>
       </div>

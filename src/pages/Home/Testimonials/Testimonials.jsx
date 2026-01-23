@@ -7,27 +7,27 @@ import reviewQuote from "../../../assets/reviewQuote.png";
 const testimonialsData = [
   {
     quote:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day.",
-    name: "Awlad Hossin",
-    role: "Senior Product Designer",
+      "ProFast has been a game-changer for my small business. Their delivery is always on time, and the live tracking gives me peace of mind. Highly recommended!",
+    name: "Sadia Islam",
+    role: "E-commerce Store Owner",
   },
   {
     quote:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day.",
-    name: "Rasel Ahamed",
-    role: "CTO",
+      "I've been using ProFast for all my personal shipments, and I'm consistently impressed with their professionalism and speed. Their customer service is top-notch!",
+    name: "Rahim Ahmed",
+    role: "Freelancer",
   },
   {
     quote:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day.",
-    name: "Nasir Uddin",
-    role: "CEO",
+      "The corporate logistics solutions from ProFast have streamlined our operations significantly. Their team is reliable, and their rates are competitive. A great partner to have.",
+    name: "Fatima Chowdhury",
+    role: "Operations Manager",
   },
   {
     quote:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day.",
+      "As a frequent online shopper, I appreciate ProFast's easy parcel return service. It makes the whole process hassle-free. Thank you, ProFast!",
     name: "John Doe",
-    role: "Software Engineer",
+    role: "Online Shopper",
   },
 ];
 
@@ -76,16 +76,14 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-20 px-4 text-center bg-[#F0F5F5]">
+    <section className="py-16 px-4 text-center bg-[#F0F5F5]">
       <div className="container mx-auto">
         <img src={reviewQuote} alt="quote" className="mx-auto mb-6" />
         <h2 className="text-4xl font-bold mb-4 text-[#20363A]">
-          What our customers are sayings
+          What Our Customers Are Saying
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-          Enhance posture, mobility, and well-being effortlessly with Posture
-          Pro. Achieve proper alignment, reduce pain, and strengthen your body
-          with ease!
+          We are committed to providing the best service to our customers. Here's what they have to say about us.
         </p>
 
         <Slider {...settings}>
@@ -100,7 +98,18 @@ const Testimonials = () => {
                 </p>
                 <div className="border-t border-dashed border-gray-300 my-4"></div>
                 <div className="flex items-center">
-                  <div className="w-16 h-16 rounded-full bg-[#20363A] mr-4"></div>
+                  <div className="w-16 h-16 rounded-full bg-[#20363A] mr-4 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-8 h-8 text-white"
+                    >
+                      <path
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      />
+                    </svg>
+                  </div>
                   <div>
                     <p className="font-bold text-left">{testimonial.name}</p>
                     <p className="text-sm text-gray-500 text-left">

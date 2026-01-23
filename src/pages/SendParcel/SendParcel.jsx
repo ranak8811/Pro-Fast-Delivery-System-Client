@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import Swal from "sweetalert2";
 import { useLoaderData, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
@@ -16,7 +16,7 @@ const SendParcel = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors },
   } = useForm();
   const { user } = useAuth();
@@ -32,9 +32,9 @@ const SendParcel = () => {
   const getDistrictsByRegion = (region) =>
     serviceCenters.filter((w) => w.region === region).map((w) => w.district);
 
-  const parcelType = watch("type");
-  const senderRegion = watch("sender_region");
-  const receiverRegion = watch("receiver_region");
+  const parcelType = useWatch({ control, name: "type" });
+  const senderRegion = useWatch({ control, name: "sender_region" });
+  const receiverRegion = useWatch({ control, name: "receiver_region" });
 
   const onSubmit = (data) => {
     const weight = parseFloat(data.weight) || 0;
