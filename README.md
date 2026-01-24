@@ -144,4 +144,4 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 
 ## Contact
 
-For any inquiries, please contact [Your Name/Email/GitHub Profile].
+For any inquiries, please contact [ranakrphone@gmail.com].
