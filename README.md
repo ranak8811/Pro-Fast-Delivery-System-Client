@@ -2,6 +2,14 @@
 
 A modern, full-featured web application for parcel delivery management, offering distinct dashboards for users, riders, and administrators. Built with React, Vite, and Firebase.
 
+## Live URL
+
+Access the live application here: [Pro Fast Delivery System Live URL](https://zap-shift-abec3.web.app/)
+
+## Backend Repository
+
+Backend code link: https://github.com/ranak8811/Pro-Fast-Delivery-System-Server.git
+
 ## Features
 
 - **User Authentication:** Secure login, registration, and social login options.
