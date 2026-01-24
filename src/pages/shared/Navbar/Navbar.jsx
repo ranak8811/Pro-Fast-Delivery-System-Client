@@ -123,7 +123,7 @@ const Navbar = () => {
             {navItems}
           </ul>
         </div>
-        <Link to="/" className="btn btn-ghost text-xl">
+        <Link to="/" className="p-2 rounded-lg hover:bg-base-200">
           <ProFastLogo />
         </Link>
       </div>

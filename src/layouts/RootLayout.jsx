@@ -6,7 +6,10 @@ import Footer from "../pages/shared/Footer/Footer";
 const RootLayout = () => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <nav className="sticky top-0 z-10 bg-opacity-50 backdrop-blur-3xl">
+        <Navbar />
+      </nav>
+
       <main className="grow">
         <div className="mx-auto px-4">
           <Outlet />

@@ -15,6 +15,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import Loading from "../../../components/Loading";
 
 const COLORS = {
   not_collected: "#F87171", // red-400
@@ -63,7 +64,7 @@ export default function AdminDashboard() {
   if (isLoading)
     return (
       <div className="flex justify-center items-center min-h-[70vh]">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <Loading />
       </div>
     );
 

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaSearch, FaUserSlash } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Loading from "../../../components/Loading";
 
 const ActiveRiders = () => {
   const axiosSecure = useAxiosSecure();
@@ -68,7 +69,7 @@ const ActiveRiders = () => {
       </div>
 
       {/* 🌀 Loading/Error */}
-      {isLoading && <p className="text-center">Loading active riders...</p>}
+      {isLoading && <Loading />}
       {error && (
         <p className="text-center text-red-500">Failed to load riders</p>
       )}

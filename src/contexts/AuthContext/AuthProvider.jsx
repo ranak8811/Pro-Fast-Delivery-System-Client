@@ -70,8 +70,11 @@ const AuthProvider = ({ children }) => {
       setRoleLoading(true);
       if (user) {
         try {
+          const encodedEmail = encodeURIComponent(user.email);
+          const url = new URL(`/users/${encodedEmail}/role`, import.meta.env.VITE_API_URL).toString();
+
           const res = await axios.get(
-            `${import.meta.env.VITE_API_URL}/users/${user.email}/role`,
+            url,
             {
               headers: {
                 authorization: `Bearer ${await user.getIdToken()}`,
@@ -85,6 +88,8 @@ const AuthProvider = ({ children }) => {
             error,
           );
           setRole("user");
+        } finally {
+          setRoleLoading(false);
         }
       } else {
         setRole(null);

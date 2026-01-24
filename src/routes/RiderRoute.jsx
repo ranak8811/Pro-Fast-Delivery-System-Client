@@ -1,12 +1,13 @@
 import React from "react";
 import useAuth from "../hooks/useAuth";
 import Forbidden from "../components/Forbidden";
+import Loading from "../components/Loading";
 
 const RiderRoute = ({ children }) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
-    return <span className="loading loading-spinner loading-xl"></span>;
+    return <Loading />;
   }
 
   if (!user || role !== "rider") {

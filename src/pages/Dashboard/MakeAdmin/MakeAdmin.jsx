@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaSearch, FaUserShield, FaUserTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Loading from "../../../components/Loading";
 
 const MakeAdmin = () => {
   const axiosSecure = useAxiosSecure();
@@ -66,7 +67,7 @@ const MakeAdmin = () => {
           onChange={(e) => setEmailQuery(e.target.value)}
         />
       </div>
-      {isFetching && emailQuery && <p>Loading users...</p>}{" "}
+      {isFetching && emailQuery && <Loading />}{" "}
       {/* Only show loading if there's an actual query */}
       {!isFetching && users.length === 0 && emailQuery && (
         <p className="text-gray-500">No users found for "{emailQuery}".</p>

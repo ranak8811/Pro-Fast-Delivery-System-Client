@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
+import Loading from "../../../components/Loading";
 
 const PendingDeliveries = () => {
   const axiosSecure = useAxiosSecure();
@@ -72,7 +73,7 @@ const PendingDeliveries = () => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Pending Deliveries</h2>
       {isLoading ? (
-        <p>Loading...</p>
+        <Loading />
       ) : parcels.length === 0 ? (
         <p className="text-gray-500">No assigned deliveries.</p>
       ) : (

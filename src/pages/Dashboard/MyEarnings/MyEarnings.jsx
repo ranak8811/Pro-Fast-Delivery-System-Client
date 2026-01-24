@@ -8,6 +8,7 @@ import {
 } from "date-fns";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
+import Loading from "../../../components/Loading";
 
 const MyEarnings = () => {
   const axiosSecure = useAxiosSecure();
@@ -64,7 +65,7 @@ const MyEarnings = () => {
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold">My Earnings</h2>
       {isLoading ? (
-        <p>Loading...</p>
+        <Loading />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

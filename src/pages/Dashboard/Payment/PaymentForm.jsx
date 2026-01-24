@@ -6,6 +6,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
+import Loading from "../../../components/Loading";
 
 const PaymentForm = () => {
   const stripe = useStripe();
@@ -29,7 +30,7 @@ const PaymentForm = () => {
   if (isPending) {
     return (
       <div className="flex justify-center items-center h-full">
-        <span className="loading loading-spinner loading-lg"></span>
+        <Loading />
       </div>
     );
   }

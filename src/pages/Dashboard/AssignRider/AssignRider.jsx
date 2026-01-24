@@ -5,6 +5,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import useAuth from "../../../hooks/useAuth";
+import Loading from "../../../components/Loading";
 
 const AssignRider = () => {
   const axiosSecure = useAxiosSecure();
@@ -84,7 +85,7 @@ const AssignRider = () => {
       <h2 className="text-2xl font-bold mb-4">Assign Rider to Parcels</h2>
 
       {isLoading ? (
-        <p>Loading parcels...</p>
+        <Loading />
       ) : parcels.length === 0 ? (
         <p className="text-gray-500">No parcels available for assignment.</p>
       ) : (
@@ -134,7 +135,7 @@ const AssignRider = () => {
               </h3>
 
               {loadingRiders ? (
-                <p>Loading riders...</p>
+                <Loading />
               ) : riders.length === 0 ? (
                 <p className="text-error">
                   No available riders in this district.

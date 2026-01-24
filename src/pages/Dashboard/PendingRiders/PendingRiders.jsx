@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import Loading from "../../../components/Loading";
 
 const PendingRiders = () => {
   const axiosSecure = useAxiosSecure();
@@ -57,7 +58,7 @@ const PendingRiders = () => {
       <h2 className="text-2xl font-semibold mb-4">
         Pending Rider Applications
       </h2>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Loading />}
       {error && <p className="text-red-500">Failed to load applications.</p>}
       {!isLoading && !error && (
         <div className="overflow-x-auto">
