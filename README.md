@@ -1,4 +1,4 @@
-# Zap-Shift Client
+# Pro Fast Delivery System Client
 
 A modern, full-featured web application for parcel delivery management, offering distinct dashboards for users, riders, and administrators. Built with React, Vite, and Firebase.
 
@@ -70,23 +70,25 @@ Follow these instructions to get a copy of the project up and running on your lo
     yarn install
     ```
 3.  **Environment Variables Configuration:**
-    *   Create a `.env.local` file in the root directory of the project.
-    *   This file will hold sensitive information and API keys. Below are the required environment variables:
-        ```
-        VITE_apiKey=YOUR_VITE_API_KEY
-        VITE_authDomain=YOUR_VITE_AUTH_DOMAIN
-        VITE_projectId=YOUR_VITE_PROJECT_ID
-        VITE_storageBucket=YOUR_VITE_STORAGE_BUCKET
-        VITE_messagingSenderId=YOUR_VITE_MESSAGING_SENDER_ID
-        VITE_appId=YOUR_VITE_APP_ID
-        
-        VITE_payment_key=YOUR_VITE_PAYMENT_KEY
-        
-        VITE_imgbb_key=YOUR_VITE_IMGBB_KEY
-        
-        VITE_API_URL=YOUR_VITE_API_URL
-        ```
-    *   Ensure to replace the `YOUR_...` placeholders with your actual keys.
+    - Create a `.env.local` file in the root directory of the project.
+    - This file will hold sensitive information and API keys. Below are the required environment variables:
+
+      ```
+      VITE_apiKey=YOUR_VITE_API_KEY
+      VITE_authDomain=YOUR_VITE_AUTH_DOMAIN
+      VITE_projectId=YOUR_VITE_PROJECT_ID
+      VITE_storageBucket=YOUR_VITE_STORAGE_BUCKET
+      VITE_messagingSenderId=YOUR_VITE_MESSAGING_SENDER_ID
+      VITE_appId=YOUR_VITE_APP_ID
+
+      VITE_payment_key=YOUR_VITE_PAYMENT_KEY
+
+      VITE_imgbb_key=YOUR_VITE_IMGBB_KEY
+
+      VITE_API_URL=YOUR_VITE_API_URL
+      ```
+
+    - Ensure to replace the `YOUR_...` placeholders with your actual keys.
 
 ### Running the Project
 
