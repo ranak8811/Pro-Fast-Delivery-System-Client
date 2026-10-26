@@ -18,7 +18,6 @@ const MakeAdmin = () => {
     enabled: !!emailQuery, // Only run query if emailQuery is not empty
     queryFn: async () => {
       const res = await axiosSecure.get(`/users/search?email=${emailQuery}`);
-      console.log(res);
       return res.data;
     },
   });
@@ -49,7 +48,7 @@ const MakeAdmin = () => {
       await updateRole({ id, role: newRole });
       Swal.fire("Success", `${action} successful`, "success");
     } catch (error) {
-      console.log(error);
+      console.error("Failed to update user role:", error);
       Swal.fire("Error", "Failed to update user role", "error");
     }
   };

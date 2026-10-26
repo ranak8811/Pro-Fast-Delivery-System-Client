@@ -117,10 +117,7 @@ const SendParcel = () => {
           tracking_id: tracking_id,
         };
 
-        console.log("Ready for payment:", parcelData);
-
         axiosSecure.post("/business", parcelData).then(async (res) => {
-          console.log(res.data);
           if (res.data.insertedId) {
             // TODO: redirect to a payment page
             Swal.fire({

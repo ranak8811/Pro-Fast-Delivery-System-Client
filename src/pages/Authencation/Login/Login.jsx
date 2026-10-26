@@ -23,7 +23,6 @@ const Login = () => {
     signIn(data.email, data.password)
       .then(async (result) => {
         setUser(result.user);
-        console.log("logged in user: ", result.user.displayName);
 
         toast.success(
           `${result.user.displayName} logged in successfully : ${result.user.email}`,
@@ -34,7 +33,7 @@ const Login = () => {
         navigate(from);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to login. Please check your credentials.", {
           id: toastId,
         });

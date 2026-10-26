@@ -29,7 +29,7 @@ const DashboardLayout = () => {
       })
       .catch((error) => {
         // An error happened.
-        console.log(error);
+        console.error(error);
       });
   };
 

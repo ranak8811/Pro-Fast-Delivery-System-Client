@@ -36,7 +36,7 @@ const RiderDashboard = () => {
       <div className="text-red-500">Error loading dashboard: {error.message}</div>
     );
   }
-  console.log("Rider Dashboard Summary:", riderDashboardSummary);
+
   const {
     totalDeliveriesCompleted,
     totalDeliveriesPending,

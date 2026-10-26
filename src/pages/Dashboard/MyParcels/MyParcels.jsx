@@ -27,7 +27,6 @@ const MyParcels = () => {
   };
 
   const handlePay = (id) => {
-    console.log("Proceed to payment for", id);
     // Implement your payment logic
     navigate(`/dashboard/payment/${id}`);
   };
@@ -39,7 +38,6 @@ const MyParcels = () => {
     if (confirm) {
       try {
         axiosSecure.delete(`/business/${id}`).then((res) => {
-          console.log(res.data);
           if (res.data.deletedCount) {
             toast.success("Parcel has been deleted.");
           }

@@ -34,8 +34,6 @@ const BeARider = () => {
       created_at: new Date().toISOString(),
     };
 
-    console.log("Rider Application:", riderData);
-
     axiosSecure.post("/employee", riderData).then((res) => {
       if (res.data.insertedId) {
         Swal.fire({

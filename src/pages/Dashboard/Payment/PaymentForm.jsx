@@ -60,7 +60,6 @@ const PaymentForm = () => {
       setError(error.message);
     } else {
       setError("");
-      console.log("payment method", paymentMethod);
 
       // step-2: create payment intent
       const res = await axiosSecure.post("/payment/create-payment-intent", {
@@ -86,7 +85,6 @@ const PaymentForm = () => {
       } else {
         setError("");
         if (result.paymentIntent.status === "succeeded") {
-          console.log("Payment succeeded!");
           const transactionId = result.paymentIntent.id;
           // step-4 mark parcel paid also create payment history
           const paymentData = {

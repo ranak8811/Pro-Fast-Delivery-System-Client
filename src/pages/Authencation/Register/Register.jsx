@@ -23,12 +23,8 @@ const Register = () => {
 
   const onSubmit = (data) => {
     const toastId = toast.loading("Creating account...");
-    console.log(data);
-    console.log(createUser);
     createUser(data.email, data.password)
       .then(async (result) => {
-        console.log(result.user);
-
         // update user info in database
         const userInfo = {
           email: data.email,
@@ -38,7 +34,6 @@ const Register = () => {
         };
 
         const userRes = await axiosInstance.post("/users", userInfo);
-        console.log(userRes.data);
 
         // update user info in firebase
         const userProfile = {
@@ -48,7 +43,6 @@ const Register = () => {
 
         updateUserProfile(userProfile)
           .then(() => {
-            console.log("user profile updated");
             toast.success("Account created successfully!", { id: toastId });
             navigate(from);
           })

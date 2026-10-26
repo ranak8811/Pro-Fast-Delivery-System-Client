@@ -38,7 +38,7 @@ const UserDashboard = () => {
       </div>
     );
   }
-  console.log("User Dashboard Summary:", userDashboardSummary);
+
   const { totalParcels, parcelStatusCounts, recentParcels, spendingHistory } =
     userDashboardSummary;
   return (

@@ -24,7 +24,6 @@ const PaymentHistory = () => {
     return <Loading />;
   }
 
-  console.log(payments);
   return (
     <div className="overflow-x-auto shadow-md rounded-xl">
       <table className="table table-zebra w-full">
