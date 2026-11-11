@@ -114,6 +114,10 @@ export const router = createBrowserRouter([
         path: "track",
         element: <TrackParcel />,
       },
+      {
+        path: "track/:trackingId",
+        element: <TrackParcel />,
+      },
 
       // rider only routes
       {
