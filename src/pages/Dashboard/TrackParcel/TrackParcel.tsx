@@ -6,6 +6,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { FaSearch, FaBoxOpen, FaTimes } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
+import useTitle from "../../../hooks/useTitle";
 import Loading from "../../../components/Loading";
 import AITrackingAssistantCard from "../../../components/AITrackingAssistantCard";
 import { Parcel } from "../../../types/parcel";
@@ -37,6 +38,7 @@ interface DetailedParcelTracking {
 }
 
 const TrackParcel: React.FC = () => {
+  useTitle("Track Parcel");
   const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const { trackingId: routeTrackingId } = useParams<{ trackingId?: string }>();
