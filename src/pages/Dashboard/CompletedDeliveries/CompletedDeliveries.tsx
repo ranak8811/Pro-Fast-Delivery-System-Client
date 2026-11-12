@@ -1,16 +1,29 @@
+import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import Loading from "../../../components/Loading";
 
-const CompletedDeliveries = () => {
+interface CompletedParcel {
+  _id: string;
+  tracking_id: string;
+  title: string;
+  sender_center: string;
+  receiver_center: string;
+  picked_at?: string;
+  delivered_at?: string;
+  cost: number | string;
+  cashout_status?: string;
+}
+
+const CompletedDeliveries: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const email = user?.email;
 
-  const { data: parcels = [], isLoading } = useQuery({
+  const { data: parcels = [], isLoading } = useQuery<CompletedParcel[]>({
     queryKey: ["completedDeliveries", email],
     enabled: !!email,
     queryFn: async () => {
@@ -21,8 +34,8 @@ const CompletedDeliveries = () => {
     },
   });
 
-  const calculateEarning = (parcel) => {
-    const cost = Number(parcel.cost);
+  const calculateEarning = (parcel: CompletedParcel): number => {
+    const cost = Number(parcel.cost) || 0;
     if (parcel.sender_center === parcel.receiver_center) {
       return cost * 0.8;
     } else {
@@ -32,16 +45,16 @@ const CompletedDeliveries = () => {
 
   // Mutation for cashout
   const { mutateAsync: cashout } = useMutation({
-    mutationFn: async (parcelId) => {
+    mutationFn: async (parcelId: string) => {
       const res = await axiosSecure.patch(`/business/${parcelId}/cashout`);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["completedDeliveries"]);
+      queryClient.invalidateQueries({ queryKey: ["completedDeliveries"] });
     },
   });
 
-  const handleCashout = (parcelId) => {
+  const handleCashout = (parcelId: string): void => {
     Swal.fire({
       title: "Confirm Cashout",
       text: "You are about to cash out this delivery.",
