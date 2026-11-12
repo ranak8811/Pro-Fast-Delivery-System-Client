@@ -1,6 +1,9 @@
 import React from "react";
+import useTitle from "../../hooks/useTitle";
 
 const About: React.FC = () => {
+  useTitle("About Us");
+
   return (
     <div className="bg-white py-16 px-4">
       <div className="container mx-auto">
