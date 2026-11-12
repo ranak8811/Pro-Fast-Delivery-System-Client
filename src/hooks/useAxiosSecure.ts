@@ -1,19 +1,19 @@
-import axios from "axios";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import useAuth from "./useAuth";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 
-const axiosSecure = axios.create({
+const axiosSecure: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-const useAxiosSecure = () => {
+const useAxiosSecure = (): AxiosInstance => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const requestInterceptor = axiosSecure.interceptors.request.use(
-      async (config) => {
+      async (config: InternalAxiosRequestConfig) => {
         if (user) {
           const token = await user.getIdToken();
           config.headers.Authorization = `Bearer ${token}`;
@@ -22,7 +22,7 @@ const useAxiosSecure = () => {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     const responseInterceptor = axiosSecure.interceptors.response.use(
@@ -39,7 +39,7 @@ const useAxiosSecure = () => {
             .catch((err) => console.error(err));
         }
         return Promise.reject(error);
-      }
+      },
     );
 
     return () => {
