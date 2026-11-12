@@ -6,6 +6,7 @@ import SocialLogin from "../SocialLogin /SocialLogin";
 import axios from "axios";
 import useAxios from "../../../hooks/useAxios";
 import toast from "react-hot-toast";
+import useTitle from "../../../hooks/useTitle";
 
 interface RegisterFormInputs {
   name: string;
@@ -14,6 +15,7 @@ interface RegisterFormInputs {
 }
 
 const Register: React.FC = () => {
+  useTitle("Register");
   const {
     register,
     handleSubmit,
