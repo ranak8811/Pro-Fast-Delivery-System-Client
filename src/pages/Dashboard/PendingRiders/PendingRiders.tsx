@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface PendingRider {
   _id: string;
@@ -15,6 +16,7 @@ interface PendingRider {
 }
 
 const PendingRiders: React.FC = () => {
+  useTitle("Pending Riders");
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
 
