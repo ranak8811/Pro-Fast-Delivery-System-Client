@@ -6,7 +6,24 @@ import Loading from "../../../components/Loading";
 import DeliveryStatsChart from "../../../components/charts/DeliveryStatsChart";
 import RiderEarningsChart from "../../../components/charts/RiderEarningsChart";
 
-const RiderDashboard = () => {
+interface RecentDelivery {
+  _id: string;
+  status: string;
+  origin: string;
+  destination: string;
+  creation_date: string;
+}
+
+interface RiderDashboardSummary {
+  totalDeliveriesCompleted?: number;
+  totalDeliveriesPending?: number;
+  averageDeliveryTime?: string;
+  totalEarnings?: number;
+  monthlyEarnings?: { month: string; amount: number }[];
+  recentDeliveries?: RecentDelivery[];
+}
+
+const RiderDashboard: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
@@ -15,7 +32,7 @@ const RiderDashboard = () => {
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<RiderDashboardSummary>({
     queryKey: ["riderDashboardSummary", user?.email],
     queryFn: async () => {
       if (!user?.email) return {};
@@ -33,18 +50,21 @@ const RiderDashboard = () => {
 
   if (isError) {
     return (
-      <div className="text-red-500">Error loading dashboard: {error.message}</div>
+      <div className="text-red-500">
+        Error loading dashboard: {error instanceof Error ? error.message : "Unknown error"}
+      </div>
     );
   }
 
   const {
     totalDeliveriesCompleted,
     totalDeliveriesPending,
-    averageDeliveryTime,
-    totalEarnings,
-    monthlyEarnings,
-    recentDeliveries,
+    averageDeliveryTime = "N/A",
+    totalEarnings = 0,
+    monthlyEarnings = [],
+    recentDeliveries = [],
   } = riderDashboardSummary;
+
   return (
     <div className="p-4">
       <h2 className="text-5xl font-bold mb-8 text-center">Rider Dashboard</h2>
@@ -55,7 +75,7 @@ const RiderDashboard = () => {
             Deliveries Completed
           </h3>
           <p className="text-4xl font-bold text-green-600">
-            {totalDeliveriesCompleted}
+            {totalDeliveriesCompleted ?? 0}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -69,7 +89,7 @@ const RiderDashboard = () => {
             Deliveries Pending
           </h3>
           <p className="text-4xl font-bold text-yellow-600">
-            {totalDeliveriesPending}
+            {totalDeliveriesPending ?? 0}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
