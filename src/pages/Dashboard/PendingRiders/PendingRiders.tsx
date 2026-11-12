@@ -1,10 +1,20 @@
+import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import Loading from "../../../components/Loading";
 
-const PendingRiders = () => {
+interface PendingRider {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  region: string;
+  district: string;
+}
+
+const PendingRiders: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
 
@@ -13,7 +23,7 @@ const PendingRiders = () => {
     data: riders = [],
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<PendingRider[]>({
     queryKey: ["pendingRiders"],
     queryFn: async () => {
       const res = await axiosSecure.get("/employee/pending");
@@ -23,16 +33,27 @@ const PendingRiders = () => {
 
   // Mutation for updating rider status
   const { mutateAsync: updateRiderStatus } = useMutation({
-    mutationFn: async ({ id, status, email }) => {
+    mutationFn: async ({
+      id,
+      status,
+      email,
+    }: {
+      id: string;
+      status: string;
+      email: string;
+    }) => {
       await axiosSecure.patch(`/employee/${id}/status`, { status, email });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries("pendingRiders");
+      queryClient.invalidateQueries({ queryKey: ["pendingRiders"] });
     },
   });
 
   // Handle status update
-  const handleUpdateStatus = async (rider, newStatus) => {
+  const handleUpdateStatus = async (
+    rider: PendingRider,
+    newStatus: string,
+  ): Promise<void> => {
     const confirm = await Swal.fire({
       title: `Are you sure you want to ${newStatus}?`,
       icon: "question",
@@ -47,8 +68,12 @@ const PendingRiders = () => {
           email: rider.email,
         });
         Swal.fire("Success", `Rider has been ${newStatus}.`, "success");
-      } catch (err) {
-        Swal.fire("Error", `Failed to ${newStatus} rider.`, err);
+      } catch (err: unknown) {
+        Swal.fire(
+          "Error",
+          `Failed to ${newStatus} rider.`,
+          err instanceof Error ? "error" : "error",
+        );
       }
     }
   };
@@ -99,7 +124,7 @@ const PendingRiders = () => {
               ))}
               {riders.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="text-center">
+                  <td colSpan={6} className="text-center">
                     No pending applications.
                   </td>
                 </tr>
