@@ -1,31 +1,36 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import SocialLogin from "../SocialLogin /SocialLogin";
 import toast from "react-hot-toast";
 
-const Login = () => {
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
+
+const Login: React.FC = () => {
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<LoginFormInputs>();
   const { signIn, setUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.from || "/";
+  const from = (location.state as { from?: string })?.from || "/";
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     const toastId = toast.loading("Logging in...");
     signIn(data.email, data.password)
       .then(async (result) => {
         setUser(result.user);
 
         toast.success(
-          `${result.user.displayName} logged in successfully : ${result.user.email}`,
+          `${result.user.displayName || "User"} logged in successfully : ${result.user.email}`,
           {
             id: toastId,
           },
@@ -40,17 +45,17 @@ const Login = () => {
       });
   };
 
-  const handleAdminLogin = () => {
+  const handleAdminLogin = (): void => {
     setValue("email", "admin1@gmail.com");
     setValue("password", "admin1#123");
   };
 
-  const handleRiderLogin = () => {
+  const handleRiderLogin = (): void => {
     setValue("email", "rider1@gmail.com");
     setValue("password", "rider1#123");
   };
 
-  const handleUserLogin = () => {
+  const handleUserLogin = (): void => {
     setValue("email", "alex@gmail.com");
     setValue("password", "alex#123");
   };
@@ -64,7 +69,7 @@ const Login = () => {
             <label className="label">Email</label>
             <input
               type="email"
-              {...register("email")}
+              {...register("email", { required: true })}
               className="input"
               placeholder="Email"
             />
@@ -101,7 +106,9 @@ const Login = () => {
               <a className="link link-hover">Forgot password?</a>
             </div>
 
-            <button className="btn btn-primary text-black mt-4">Login</button>
+            <button type="submit" className="btn btn-primary text-black mt-4">
+              Login
+            </button>
           </fieldset>
           <div className="flex justify-around mt-4">
             <button
@@ -135,7 +142,7 @@ const Login = () => {
             </small>
           </p>
         </form>
-        <SocialLogin></SocialLogin>
+        <SocialLogin />
       </div>
     </div>
   );
