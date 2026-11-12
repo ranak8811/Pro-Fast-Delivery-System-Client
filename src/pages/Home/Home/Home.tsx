@@ -6,15 +6,15 @@ import Features from "../Features/Features";
 import Testimonials from "../Testimonials/Testimonials";
 import FAQ from "../FAQ/FAQ";
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
     <div className="space-y-20">
-      <Banner></Banner>
-      <Services></Services>
-      <Features></Features>
-      <BeMerchant></BeMerchant>
-      <Testimonials></Testimonials>
-      <FAQ></FAQ>
+      <Banner />
+      <Services />
+      <Features />
+      <BeMerchant />
+      <Testimonials />
+      <FAQ />
     </div>
   );
 };
