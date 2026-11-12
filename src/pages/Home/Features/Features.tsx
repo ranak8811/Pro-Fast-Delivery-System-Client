@@ -3,7 +3,13 @@ import liveTracking from "../../../assets/live-tracking.png";
 import safeDelivery from "../../../assets/safe-delivery.png";
 import callCenter from "../../../assets/call-center-service.png";
 
-const featuresData = [
+interface FeatureItem {
+  title: string;
+  description: string;
+  img: string;
+}
+
+const featuresData: FeatureItem[] = [
   {
     title: "Live Parcel Tracking",
     description:
@@ -24,7 +30,12 @@ const featuresData = [
   },
 ];
 
-const Feature = ({ feature, reverse }) => {
+interface FeatureProps {
+  feature: FeatureItem;
+  reverse?: boolean;
+}
+
+const Feature: React.FC<FeatureProps> = ({ feature, reverse }) => {
   return (
     <div
       className={`flex items-center justify-center gap-8 rounded-2xl bg-white p-8 ${
@@ -54,7 +65,7 @@ const Feature = ({ feature, reverse }) => {
   );
 };
 
-const Features = () => {
+const Features: React.FC = () => {
   return (
     <section className="space-y-8 bg-gray-50 py-16 px-4">
       <div className="text-center text-[#20363A] mb-12">
