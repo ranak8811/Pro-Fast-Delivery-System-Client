@@ -1,9 +1,13 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import useAuth from "../hooks/useAuth";
 import Forbidden from "../components/Forbidden";
 import Loading from "../components/Loading";
 
-const RiderRoute = ({ children }) => {
+interface RiderRouteProps {
+  children: ReactNode;
+}
+
+const RiderRoute: React.FC<RiderRouteProps> = ({ children }) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -14,7 +18,7 @@ const RiderRoute = ({ children }) => {
     return <Forbidden />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default RiderRoute;
