@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import React, { useEffect, useState, ReactNode } from "react";
+import { AuthContext, AuthContextType, UserProfileInfo } from "./AuthContext";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -8,6 +8,8 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
+  User,
+  UserCredential,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 import axios from "axios";
@@ -16,33 +18,40 @@ import toast from "react-hot-toast";
 
 const googleProvider = new GoogleAuthProvider();
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState(null);
-  const [roleLoading, setRoleLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [role, setRole] = useState<string | null>(null);
+  const [roleLoading, setRoleLoading] = useState<boolean>(true);
   const queryClient = useQueryClient();
 
-  const createUser = (email, password) => {
+  const createUser = (email: string, password: string): Promise<UserCredential> => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  const signIn = (email, password) => {
+  const signIn = (email: string, password: string): Promise<UserCredential> => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signInWithGoogle = () => {
+  const signInWithGoogle = (): Promise<UserCredential> => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
 
-  const updateUserProfile = (profileInfo) => {
+  const updateUserProfile = (profileInfo: UserProfileInfo): Promise<void> => {
+    if (!auth.currentUser) {
+      return Promise.reject(new Error("No user currently signed in"));
+    }
     return updateProfile(auth.currentUser, profileInfo);
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     setLoading(true);
     try {
       await signOut(auth);
@@ -68,7 +77,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchRole = async () => {
       setRoleLoading(true);
-      if (user) {
+      if (user && user.email) {
         try {
           const encodedEmail = encodeURIComponent(user.email);
           const url = new URL(`/users/${encodedEmail}/role`, import.meta.env.VITE_API_URL).toString();
@@ -100,7 +109,7 @@ const AuthProvider = ({ children }) => {
     fetchRole();
   }, [user]);
 
-  const authInfo = {
+  const authInfo: AuthContextType = {
     createUser,
     signIn,
     user,
@@ -111,6 +120,7 @@ const AuthProvider = ({ children }) => {
     signInWithGoogle,
     updateUserProfile,
   };
+
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
