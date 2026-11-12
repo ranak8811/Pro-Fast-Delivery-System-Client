@@ -3,6 +3,7 @@ import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface PaymentRecord {
   transactionId: string;
@@ -16,6 +17,7 @@ const formatDate = (iso?: string): string =>
   iso ? new Date(iso).toLocaleString() : "N/A";
 
 const PaymentHistory: React.FC = () => {
+  useTitle("Payment History");
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 
