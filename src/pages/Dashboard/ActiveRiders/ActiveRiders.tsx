@@ -1,21 +1,32 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaSearch, FaUserSlash } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Loading from "../../../components/Loading";
 
-const ActiveRiders = () => {
+interface RiderData {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  region: string;
+  district: string;
+  bike_brand: string;
+  bike_registration: string;
+}
+
+const ActiveRiders: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🟡 Load Active Riders with React Query
+  // Load Active Riders with React Query
   const {
     data: riders = [],
     isLoading,
     refetch,
     error,
-  } = useQuery({
+  } = useQuery<RiderData[]>({
     queryKey: ["activeRiders"],
     queryFn: async () => {
       const res = await axiosSecure.get("/employee/active");
@@ -23,8 +34,8 @@ const ActiveRiders = () => {
     },
   });
 
-  // 🔴 Handle Deactivation
-  const handleDeactivate = async (id) => {
+  // Handle Deactivation
+  const handleDeactivate = async (id: string): Promise<void> => {
     const confirm = await Swal.fire({
       title: "Deactivate this rider?",
       icon: "warning",
@@ -41,13 +52,13 @@ const ActiveRiders = () => {
       });
       Swal.fire("Done", "Rider has been deactivated", "success");
       refetch();
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       Swal.fire("Error", "Failed to deactivate rider", "error");
     }
   };
 
-  // 🔎 Filtered List
+  // Filtered List
   const filteredRiders = riders.filter((rider) =>
     rider.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -56,7 +67,7 @@ const ActiveRiders = () => {
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">Active Riders</h2>
 
-      {/* 🔍 Search Field */}
+      {/* Search Field */}
       <div className="mb-4 flex items-center gap-2">
         <FaSearch />
         <input
@@ -68,13 +79,13 @@ const ActiveRiders = () => {
         />
       </div>
 
-      {/* 🌀 Loading/Error */}
+      {/* Loading/Error */}
       {isLoading && <Loading />}
       {error && (
         <p className="text-center text-red-500">Failed to load riders</p>
       )}
 
-      {/* 📊 Rider Table */}
+      {/* Rider Table */}
       {!isLoading && !error && (
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
@@ -118,7 +129,7 @@ const ActiveRiders = () => {
               ))}
               {filteredRiders.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="text-center text-gray-500">
+                  <td colSpan={8} className="text-center text-gray-500">
                     No matching riders found.
                   </td>
                 </tr>
