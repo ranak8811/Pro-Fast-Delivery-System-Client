@@ -1,14 +1,25 @@
 import React from "react";
 
-const ServiceCard = ({ service, index }) => {
-  const cardStyle = {
+export interface ServiceItem {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface ServiceCardProps {
+  service: ServiceItem;
+  index: number;
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
+  const cardStyle: React.CSSProperties = {
     backgroundColor: index === 1 ? "#D4F75A" : "white",
     borderRadius: "20px",
     padding: "40px",
     textAlign: "center",
   };
 
-  const textStyle = {
+  const textStyle: React.CSSProperties = {
     color: index === 1 ? "#20363A" : "#20363A",
   };
 
