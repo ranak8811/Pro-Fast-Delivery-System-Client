@@ -6,21 +6,21 @@ import RiderDashboard from "./RiderDashboard";
 import AdminDashboard from "./AdminDashboard";
 import Forbidden from "../../../components/Forbidden";
 
-const DashboardHome = () => {
+const DashboardHome: React.FC = () => {
   const { role, loading } = useAuth();
 
   if (loading) {
-    return <Loading></Loading>;
+    return <Loading />;
   }
 
   if (role === "user") {
-    return <UserDashboard></UserDashboard>;
+    return <UserDashboard />;
   } else if (role === "rider") {
-    return <RiderDashboard></RiderDashboard>;
+    return <RiderDashboard />;
   } else if (role === "admin") {
-    return <AdminDashboard></AdminDashboard>;
+    return <AdminDashboard />;
   } else {
-    return <Forbidden></Forbidden>;
+    return <Forbidden />;
   }
 };
 
