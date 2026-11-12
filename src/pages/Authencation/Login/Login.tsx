@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import SocialLogin from "../SocialLogin /SocialLogin";
 import toast from "react-hot-toast";
+import useTitle from "../../../hooks/useTitle";
 
 interface LoginFormInputs {
   email: string;
@@ -11,6 +12,7 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
+  useTitle("Login");
   const {
     register,
     handleSubmit,
