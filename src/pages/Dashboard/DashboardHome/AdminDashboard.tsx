@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   FaMotorcycle,
@@ -17,35 +17,40 @@ import {
 } from "recharts";
 import Loading from "../../../components/Loading";
 
-const COLORS = {
+const COLORS: Record<string, string> = {
   not_collected: "#F87171", // red-400
   in_transit: "#FBBF24", // yellow-400
   rider_assigned: "#60A5FA", // blue-400
   delivered: "#34D399", // green-400
 };
 
-const statusIcons = {
+const statusIcons: Record<string, ReactNode> = {
   rider_assigned: <FaMotorcycle className="text-4xl text-info" />,
   delivered: <FaCheckCircle className="text-4xl text-success" />,
   in_transit: <FaShippingFast className="text-4xl text-warning" />,
   not_collected: <FaBoxOpen className="text-4xl text-error" />,
 };
 
-const statusLabels = {
+const statusLabels: Record<string, string> = {
   rider_assigned: "Assigned to Rider",
   delivered: "Delivered",
   in_transit: "In Transit",
   not_collected: "Not Collected",
 };
 
-export default function AdminDashboard() {
+interface StatusCountItem {
+  status: string;
+  count: number;
+}
+
+export default function AdminDashboard(): React.ReactElement {
   const axiosSecure = useAxiosSecure();
   const {
     data: deliveryStatus = [],
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<StatusCountItem[]>({
     queryKey: ["parcelStatusCount"],
     queryFn: async () => {
       const res = await axiosSecure.get("/business/delivery/status-count");
@@ -71,7 +76,7 @@ export default function AdminDashboard() {
   if (isError)
     return (
       <div className="text-center text-red-600 mt-10">
-        Error loading data: {error.message}
+        Error loading data: {error instanceof Error ? error.message : "Unknown error"}
       </div>
     );
 
@@ -94,7 +99,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* pie chart */}
-      <div className="card bg-base-100 shadow-md p-4">
+      <div className="card bg-base-100 shadow-md p-4 mt-6">
         <h2 className="text-xl font-bold mb-4">Delivery Status Breakdown</h2>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
@@ -106,7 +111,7 @@ export default function AdminDashboard() {
               cy="50%"
               outerRadius={100}
               label={({ name, percent }) =>
-                `${name} (${(percent * 100).toFixed(0)}%)`
+                `${name} (${((percent || 0) * 100).toFixed(0)}%)`
               }
             >
               {processedPieData.map((entry) => (
