@@ -1,6 +1,6 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
@@ -8,23 +8,33 @@ import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import Loading from "../../../components/Loading";
 
-const PaymentForm = () => {
+interface ParcelInfo {
+  _id?: string;
+  tracking_id?: string;
+  title?: string;
+  type?: string;
+  weight?: string | number;
+  cost?: number;
+}
+
+const PaymentForm: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const { parcelId } = useParams();
+  const { parcelId } = useParams<{ parcelId: string }>();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const { logTracking } = useTrackingLogger();
   const navigate = useNavigate();
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
-  const { isPending, data: parcelInfo = {} } = useQuery({
+  const { isPending, data: parcelInfo = {} } = useQuery<ParcelInfo>({
     queryKey: ["business", parcelId],
     queryFn: async () => {
       const res = await axiosSecure.get(`/business/${parcelId}`);
       return res.data;
     },
+    enabled: !!parcelId,
   });
 
   if (isPending) {
@@ -35,10 +45,10 @@ const PaymentForm = () => {
     );
   }
 
-  const amount = parcelInfo.cost;
+  const amount = parcelInfo.cost || 0;
   const amountInCents = amount * 100;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!stripe || !elements) {
       return;
@@ -51,13 +61,13 @@ const PaymentForm = () => {
     }
 
     // step- 1: validate the card
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
+    const { error: stripeError } = await stripe.createPaymentMethod({
       type: "card",
       card,
     });
 
-    if (error) {
-      setError(error.message);
+    if (stripeError) {
+      setError(stripeError.message || "An error occurred");
     } else {
       setError("");
 
@@ -72,24 +82,24 @@ const PaymentForm = () => {
       // step-3: confirm payment
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: elements.getElement(CardElement),
+          card: card,
           billing_details: {
-            name: user.displayName,
-            email: user.email,
+            name: user?.displayName || "Customer",
+            email: user?.email || undefined,
           },
         },
       });
 
       if (result.error) {
-        setError(result.error.message);
+        setError(result.error.message || "Payment confirmation failed");
       } else {
         setError("");
-        if (result.paymentIntent.status === "succeeded") {
+        if (result.paymentIntent?.status === "succeeded") {
           const transactionId = result.paymentIntent.id;
           // step-4 mark parcel paid also create payment history
           const paymentData = {
             parcelId,
-            email: user.email,
+            email: user?.email,
             amount,
             transactionId: transactionId,
             paymentMethod: result.paymentIntent.payment_method_types,
@@ -97,10 +107,9 @@ const PaymentForm = () => {
 
           const paymentRes = await axiosSecure.post(
             "/payment/payments",
-            paymentData
+            paymentData,
           );
           if (paymentRes.data.insertedId) {
-            // ✅ Show SweetAlert with transaction ID
             await Swal.fire({
               icon: "success",
               title: "Payment Successful!",
@@ -108,13 +117,15 @@ const PaymentForm = () => {
               confirmButtonText: "Go to My Parcels",
             });
 
-            await logTracking({
-              tracking_id: parcelInfo.tracking_id,
-              status: "payment_done",
-              details: `Paid by ${user.displayName}`,
-              updated_by: user.email,
-            });
-            // ✅ Redirect to /myParcels
+            if (parcelInfo.tracking_id) {
+              await logTracking({
+                tracking_id: parcelInfo.tracking_id,
+                status: "payment_done",
+                details: `Paid by ${user?.displayName || "User"}`,
+                updated_by: user?.email || undefined,
+              });
+            }
+
             navigate("/dashboard/myParcels");
           }
         }
@@ -140,7 +151,7 @@ const PaymentForm = () => {
         onSubmit={handleSubmit}
         className="space-y-4 bg-white p-6 rounded-xl shadow-md w-full"
       >
-        <CardElement className="p-2 border rounded"></CardElement>
+        <CardElement className="p-2 border rounded" />
         <button
           type="submit"
           className="btn btn-primary text-black w-full"
