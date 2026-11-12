@@ -4,20 +4,31 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/Loading";
 
-const formatDate = (iso) => new Date(iso).toLocaleString();
+interface PaymentRecord {
+  transactionId: string;
+  parcelId: string;
+  amount: number;
+  paid_at_string?: string;
+  paid_at?: string;
+}
 
-const PaymentHistory = () => {
+const formatDate = (iso?: string): string =>
+  iso ? new Date(iso).toLocaleString() : "N/A";
+
+const PaymentHistory: React.FC = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const { data: payments = [], isPending } = useQuery({
-    queryKey: ["payments", user.email],
+  const { data: payments = [], isPending } = useQuery<PaymentRecord[]>({
+    queryKey: ["payments", user?.email],
     queryFn: async () => {
+      if (!user?.email) return [];
       const res = await axiosSecure.get(
-        `/payment/payments?email=${user.email}`
+        `/payment/payments?email=${user.email}`,
       );
       return res.data;
     },
+    enabled: !!user?.email,
   });
 
   if (isPending) {
@@ -37,7 +48,7 @@ const PaymentHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {payments?.length > 0 ? (
+          {payments.length > 0 ? (
             payments.map((p, index) => (
               <tr key={p.transactionId}>
                 <td>{index + 1}</td>
@@ -48,12 +59,12 @@ const PaymentHistory = () => {
                 <td className="font-mono text-sm">
                   <span title={p.transactionId}>{p.transactionId}</span>
                 </td>
-                <td>{formatDate(p.paid_at_string)}</td>
+                <td>{formatDate(p.paid_at_string || p.paid_at)}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="text-center text-gray-500 py-6">
+              <td colSpan={5} className="text-center text-gray-500 py-6">
                 No payment history found.
               </td>
             </tr>
