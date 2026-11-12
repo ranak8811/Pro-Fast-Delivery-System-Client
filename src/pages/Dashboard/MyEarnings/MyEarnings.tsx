@@ -10,6 +10,7 @@ import {
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface CompletedParcelEarning {
   cost: number | string;
@@ -20,6 +21,7 @@ interface CompletedParcelEarning {
 }
 
 const MyEarnings: React.FC = () => {
+  useTitle("My Earnings");
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const email = user?.email;
