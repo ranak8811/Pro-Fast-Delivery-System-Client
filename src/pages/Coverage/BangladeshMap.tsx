@@ -97,9 +97,9 @@ const BangladeshMap: React.FC<BangladeshMapProps> = ({ serviceCenters = [] }) =>
   };
 
   return (
-    <div className="h-[620px] md:h-[720px] w-full rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 relative bg-slate-50">
+    <div className="h-[620px] md:h-[720px] w-full rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 relative bg-slate-50 isolate z-0">
       {/* Floating Modern Search Bar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-[92%] sm:w-full sm:max-w-lg">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[92%] sm:w-full sm:max-w-lg">
         <form
           onSubmit={handleSearch}
           className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/90 p-1.5 flex items-center gap-2 transition-all focus-within:ring-2 focus-within:ring-[#20363A]"
