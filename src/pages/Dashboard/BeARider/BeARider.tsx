@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
 import { useLoaderData } from "react-router";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useTitle from "../../../hooks/useTitle";
 
 interface ServiceCenterLocation {
   region: string;
@@ -22,6 +23,7 @@ interface RiderFormInputs {
 }
 
 const BeARider: React.FC = () => {
+  useTitle("Be A Rider");
   const { user } = useAuth();
   const {
     register,
