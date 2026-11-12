@@ -1,3 +1,4 @@
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   startOfDay,
@@ -10,12 +11,20 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Loading from "../../../components/Loading";
 
-const MyEarnings = () => {
+interface CompletedParcelEarning {
+  cost: number | string;
+  sender_center: string;
+  receiver_center: string;
+  delivered_at?: string;
+  cashout_status?: string;
+}
+
+const MyEarnings: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const email = user?.email;
 
-  const { data: parcels = [], isLoading } = useQuery({
+  const { data: parcels = [], isLoading } = useQuery<CompletedParcelEarning[]>({
     queryKey: ["completedDeliveries", email],
     enabled: !!email,
     queryFn: async () => {
@@ -26,8 +35,8 @@ const MyEarnings = () => {
     },
   });
 
-  const calculateEarning = (parcel) => {
-    const cost = Number(parcel.cost);
+  const calculateEarning = (parcel: CompletedParcelEarning): number => {
+    const cost = Number(parcel.cost) || 0;
     return parcel.sender_center === parcel.receiver_center
       ? cost * 0.8
       : cost * 0.3;
@@ -50,7 +59,7 @@ const MyEarnings = () => {
 
   parcels.forEach((p) => {
     const earning = calculateEarning(p);
-    const deliveredAt = new Date(p.delivered_at);
+    const deliveredAt = p.delivered_at ? new Date(p.delivered_at) : new Date(0);
     total += earning;
     if (p.cashout_status === "cashed_out") totalCashedOut += earning;
     else totalPending += earning;
