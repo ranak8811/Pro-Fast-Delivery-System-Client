@@ -1,8 +1,11 @@
 import React from "react";
 import logo from "../../../assets/logo.png";
-import { Link } from "react-router-dom";
 
-const ProFastLogo = ({ isFooter }) => {
+interface ProFastLogoProps {
+  isFooter?: boolean;
+}
+
+const ProFastLogo: React.FC<ProFastLogoProps> = ({ isFooter = false }) => {
   return (
     <div className="flex items-center">
       <img
