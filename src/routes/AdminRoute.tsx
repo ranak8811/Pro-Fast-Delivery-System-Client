@@ -1,9 +1,13 @@
-import React, { Children } from "react";
+import React, { ReactNode } from "react";
 import useAuth from "../hooks/useAuth";
 import Forbidden from "../components/Forbidden";
 import Loading from "../components/Loading";
 
-const AdminRoute = ({ children }) => {
+interface AdminRouteProps {
+  children: ReactNode;
+}
+
+const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -14,7 +18,7 @@ const AdminRoute = ({ children }) => {
     return <Forbidden />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default AdminRoute;
