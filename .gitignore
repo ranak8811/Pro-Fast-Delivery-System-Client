@@ -28,5 +28,6 @@ dist-ssr
 
 # remove api details txt file
 all_api_details.txt
+.firebase
 update
 .firebase
