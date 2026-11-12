@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/Loading";
 import DeliveryStatsChart from "../../../components/charts/DeliveryStatsChart";
 import RiderEarningsChart from "../../../components/charts/RiderEarningsChart";
+import useTitle from "../../../hooks/useTitle";
 
 interface RecentDelivery {
   _id: string;
@@ -24,6 +25,7 @@ interface RiderDashboardSummary {
 }
 
 const RiderDashboard: React.FC = () => {
+  useTitle("Rider Dashboard");
   const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
