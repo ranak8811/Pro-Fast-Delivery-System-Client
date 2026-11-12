@@ -3,14 +3,14 @@ import useAuth from "../../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router";
 import useAxios from "../../../hooks/useAxios";
 
-const SocialLogin = () => {
+const SocialLogin: React.FC = () => {
   const { signInWithGoogle } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.from || "/";
+  const from = (location.state as { from?: string })?.from || "/";
   const axiosInstance = useAxios();
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = (): void => {
     signInWithGoogle()
       .then(async (result) => {
         const user = result.user;
@@ -22,7 +22,7 @@ const SocialLogin = () => {
           last_log_in: new Date().toISOString(),
         };
 
-        const res = await axiosInstance.post("/users", userInfo);
+        await axiosInstance.post("/users", userInfo);
 
         navigate(from);
       })
@@ -35,6 +35,7 @@ const SocialLogin = () => {
     <div className="text-center">
       <p className="mb-4">OR</p>
       <button
+        type="button"
         onClick={handleGoogleSignIn}
         className="btn bg-white text-black border-[#e5e5e5]"
       >
