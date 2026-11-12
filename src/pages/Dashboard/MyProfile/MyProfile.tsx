@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/Loading";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import useTitle from "../../../hooks/useTitle";
 import {
   FaUser,
   FaEnvelope,
@@ -33,6 +34,7 @@ interface UserProfileData {
 }
 
 const MyProfile: React.FC = () => {
+  useTitle("My Profile");
   const { user, role, updateUserProfile } = useAuth();
   const axiosInstance = useAxios();
 
