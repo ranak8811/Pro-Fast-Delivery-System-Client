@@ -6,19 +6,30 @@ import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import Loading from "../../../components/Loading";
 
-const PendingDeliveries = () => {
+interface RiderParcel {
+  _id: string;
+  tracking_id: string;
+  title: string;
+  type: string;
+  receiver_name: string;
+  receiver_center: string;
+  cost: number;
+  delivery_status: string;
+}
+
+const PendingDeliveries: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const { logTracking } = useTrackingLogger();
   const { user } = useAuth();
 
   // Load parcels assigned to the current rider
-  const { data: parcels = [], isLoading } = useQuery({
+  const { data: parcels = [], isLoading } = useQuery<RiderParcel[]>({
     queryKey: ["riderParcels"],
     enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `/employee/parcels?email=${user.email}`
+        `/employee/parcels?email=${user?.email}`,
       );
       return res.data;
     },
@@ -26,18 +37,24 @@ const PendingDeliveries = () => {
 
   // Mutation for updating parcel status
   const { mutateAsync: updateStatus } = useMutation({
-    mutationFn: async ({ parcel, status }) => {
+    mutationFn: async ({
+      parcel,
+      status,
+    }: {
+      parcel: RiderParcel;
+      status: string;
+    }) => {
       const res = await axiosSecure.patch(`/business/${parcel._id}/status`, {
         status,
       });
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["riderParcels"]);
+      queryClient.invalidateQueries({ queryKey: ["riderParcels"] });
     },
   });
 
-  const handleStatusUpdate = (parcel, newStatus) => {
+  const handleStatusUpdate = (parcel: RiderParcel, newStatus: string): void => {
     Swal.fire({
       title: "Are you sure?",
       text: `Mark parcel as ${newStatus.replace("_", " ")}?`,
@@ -51,15 +68,15 @@ const PendingDeliveries = () => {
             Swal.fire("Updated!", "Parcel status updated.", "success");
 
             // log tracking
-            let trackDetails = `Picked up by ${user.displayName}`;
+            let trackDetails = `Picked up by ${user?.displayName || "Rider"}`;
             if (newStatus === "delivered") {
-              trackDetails = `Delivered by ${user.displayName}`;
+              trackDetails = `Delivered by ${user?.displayName || "Rider"}`;
             }
             await logTracking({
               tracking_id: parcel.tracking_id,
               status: newStatus,
               details: trackDetails,
-              updated_by: user.email,
+              updated_by: user?.email || undefined,
             });
           })
           .catch(() => {
