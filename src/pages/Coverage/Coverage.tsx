@@ -1,8 +1,10 @@
 import React from "react";
 import BangladeshMap, { ServiceCenter } from "./BangladeshMap";
 import { useLoaderData } from "react-router";
+import useTitle from "../../hooks/useTitle";
 
 const Coverage: React.FC = () => {
+  useTitle("Coverage Area");
   const serviceCenters = (useLoaderData() as ServiceCenter[]) || [];
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
