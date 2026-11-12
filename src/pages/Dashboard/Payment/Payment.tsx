@@ -2,6 +2,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import React from "react";
 import PaymentForm from "./PaymentForm";
+import useTitle from "../../../hooks/useTitle";
 
 const stripeKey =
   import.meta.env.VITE_payment_key ||
@@ -11,6 +12,7 @@ const stripeKey =
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 const Payment: React.FC = () => {
+  useTitle("Payment");
   return (
     <Elements stripe={stripePromise}>
       <PaymentForm />
