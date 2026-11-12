@@ -1,24 +1,29 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FaUserShield, FaMotorcycle, FaUser, FaSignOutAlt, FaTachometerAlt } from "react-icons/fa";
+import {
+  FaUserShield,
+  FaMotorcycle,
+  FaUser,
+  FaSignOutAlt,
+  FaTachometerAlt,
+} from "react-icons/fa";
 import ProFastLogo from "../../shared/ProFastLogo/ProFastLogo";
 import useAuth from "../../../hooks/useAuth";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const { user, logout, role } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout()
       .then(() => {
         // Sign-out successful.
       })
       .catch((error) => {
-        // An error happened.
         console.error(error);
       });
   };
 
-  const renderRoleBadge = (roleName) => {
+  const renderRoleBadge = (roleName: string | null | undefined): React.ReactNode => {
     const normalized = (roleName || "user").toLowerCase();
 
     if (normalized === "admin") {
@@ -46,6 +51,7 @@ const Navbar = () => {
       </span>
     );
   };
+
   const navItems = (
     <>
       <li>
@@ -126,6 +132,7 @@ const Navbar = () => {
       </li>
     </>
   );
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
