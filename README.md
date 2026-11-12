@@ -47,18 +47,20 @@ A high-performance, full-featured web application for courier and parcel logisti
 
 ## Technologies Used
 
-- **Framework:** React 19, TypeScript
-- **Build Tool:** Vite 7
-- **Styling:** Tailwind CSS, DaisyUI
-- **State Management & Data Fetching:** TanStack React Query v5
-- **Routing:** React Router v7
-- **Forms & Validation:** React Hook Form
-- **Authentication & Hosting:** Firebase Authentication, Firebase Hosting
-- **Payment Processing:** Stripe Elements & Stripe JS
-- **Mapping:** Leaflet, React Leaflet
-- **Data Visualization:** Recharts, Chart.js, React Chartjs 2
-- **Notifications & Dialogs:** React Hot Toast, SweetAlert2, Headless UI
-- **Date Handling:** Date-fns
+<div align="center">
+
+| Category | Technologies & Libraries |
+|---|---|
+| **Core & Language** | ![React 19](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Vite 7](https://img.shields.io/badge/Vite_7-646CFF?style=for-the-badge&logo=vite&logoColor=white) |
+| **Styling & UI** | ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![DaisyUI](https://img.shields.io/badge/DaisyUI_5-5A0EF8?style=for-the-badge&logo=daisyui&logoColor=white) ![Headless UI](https://img.shields.io/badge/Headless_UI-66E3FF?style=for-the-badge&logo=headlessui&logoColor=black) |
+| **Routing & Query** | ![React Router 7](https://img.shields.io/badge/React_Router_7-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query_v5-FF4154?style=for-the-badge&logo=react-query&logoColor=white) ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) |
+| **Auth & Hosting** | ![Firebase](https://img.shields.io/badge/Firebase_Auth_&_Hosting-FFCA28?style=for-the-badge&logo=firebase&logoColor=black) |
+| **Payments** | ![Stripe](https://img.shields.io/badge/Stripe_Payments-008CDD?style=for-the-badge&logo=stripe&logoColor=white) |
+| **Maps & Geospatial** | ![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white) ![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-7EBC6F?style=for-the-badge&logo=openstreetmap&logoColor=white) |
+| **Visuals & Charts** | ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white) ![Recharts](https://img.shields.io/badge/Recharts-22b5bf?style=for-the-badge&logoColor=white) |
+| **Forms & UX** | ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white) ![SweetAlert2](https://img.shields.io/badge/SweetAlert2-8C4FFF?style=for-the-badge&logoColor=white) ![React Hot Toast](https://img.shields.io/badge/React_Hot_Toast-000000?style=for-the-badge&logoColor=white) |
+
+</div>
 
 ---
 
