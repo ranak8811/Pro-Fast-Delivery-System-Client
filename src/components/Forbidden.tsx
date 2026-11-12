@@ -1,8 +1,10 @@
 import React from "react";
 import { FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import useTitle from "../hooks/useTitle";
 
 const Forbidden: React.FC = () => {
+  useTitle("403 Forbidden");
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base-200 text-center px-4">
       <FaLock className="text-6xl text-error mb-4" />
