@@ -4,6 +4,7 @@ import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import useTitle from "../../../hooks/useTitle";
 
 interface ParcelItem {
   _id: string;
@@ -31,6 +32,7 @@ interface ParcelItem {
 }
 
 const MyParcels: React.FC = () => {
+  useTitle("My Parcels");
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
