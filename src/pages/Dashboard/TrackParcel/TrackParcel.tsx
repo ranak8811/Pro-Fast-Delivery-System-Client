@@ -526,29 +526,39 @@ const TrackParcel: React.FC = () => {
                             <h4 className="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3">
                               Payment Summary
                             </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs md:text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
                               <div>
-                                <span className="text-base-content/60 block text-[11px]">Amount</span>
-                                <span className="font-bold text-emerald-600">
+                                <span className="text-base-content/60 block text-[11px] mb-0.5">Amount</span>
+                                <span className="font-bold text-base text-emerald-600">
                                   ${detailedTrackingData.paymentDetails.amount}
                                 </span>
                               </div>
                               <div>
-                                <span className="text-base-content/60 block text-[11px]">Transaction ID</span>
-                                <span className="font-mono text-xs text-base-content/80">
-                                  {detailedTrackingData.paymentDetails.transactionId}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-base-content/60 block text-[11px]">Paid At</span>
-                                <span className="text-xs text-base-content/80">
+                                <span className="text-base-content/60 block text-[11px] mb-0.5">Payment Date</span>
+                                <span className="text-xs font-medium text-base-content">
                                   {detailedTrackingData.paymentDetails.paid_at
                                     ? format(
                                         parseISO(detailedTrackingData.paymentDetails.paid_at),
-                                        "PPP p"
+                                        "MMM dd, yyyy · hh:mm a"
                                       )
                                     : "N/A"}
                                 </span>
+                              </div>
+                              <div className="sm:col-span-2">
+                                <span className="text-base-content/60 block text-[11px] mb-0.5">Transaction ID</span>
+                                <div className="flex items-center gap-2 max-w-full">
+                                  <span className="font-mono text-xs text-base-content/90 bg-base-100 px-2.5 py-1.5 rounded-xl border border-base-300 break-all select-all flex-1">
+                                    {detailedTrackingData.paymentDetails.transactionId}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => copyToClipboard(detailedTrackingData.paymentDetails!.transactionId)}
+                                    title="Copy Transaction ID"
+                                    className="p-2 rounded-xl text-base-content/50 hover:text-base-content hover:bg-base-200 transition-colors shrink-0 border border-base-300"
+                                  >
+                                    <FaCopy className="text-xs" />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
