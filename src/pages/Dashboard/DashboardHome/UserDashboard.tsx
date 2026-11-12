@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/Loading";
 import ParcelStatusChart from "../../../components/charts/ParcelStatusChart";
 import SpendingHistoryChart from "../../../components/charts/SpendingHistoryChart";
+import useTitle from "../../../hooks/useTitle";
 
 interface RecentParcel {
   _id: string;
@@ -22,6 +23,7 @@ interface UserDashboardSummary {
 }
 
 const UserDashboard: React.FC = () => {
+  useTitle("User Dashboard");
   const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
