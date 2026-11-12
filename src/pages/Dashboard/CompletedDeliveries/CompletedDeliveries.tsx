@@ -4,6 +4,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface CompletedParcel {
   _id: string;
@@ -18,6 +19,7 @@ interface CompletedParcel {
 }
 
 const CompletedDeliveries: React.FC = () => {
+  useTitle("Completed Deliveries");
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const { user } = useAuth();
