@@ -1,43 +1,69 @@
-import { useForm, useWatch } from "react-hook-form";
+import React from "react";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import Swal from "sweetalert2";
 import { useLoaderData, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useTrackingLogger from "../../hooks/useTrackingLogger";
 
-const generateTrackingID = () => {
+interface ServiceCenterItem {
+  region: string;
+  district: string;
+}
+
+export interface SendParcelFormInputs {
+  title: string;
+  type: string;
+  weight?: string | number;
+  sender_name: string;
+  sender_contact: string;
+  sender_region: string;
+  sender_center: string;
+  sender_address: string;
+  pickup_instruction: string;
+  receiver_name: string;
+  receiver_contact: string;
+  receiver_region: string;
+  receiver_center: string;
+  receiver_address: string;
+  delivery_instruction: string;
+}
+
+const generateTrackingID = (): string => {
   const date = new Date();
   const datePart = date.toISOString().split("T")[0].replace(/-/g, "");
   const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
   return `PCL-${datePart}-${rand}`;
 };
 
-const SendParcel = () => {
+const SendParcel: React.FC = () => {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<SendParcelFormInputs>();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
   const { logTracking } = useTrackingLogger();
 
-  const serviceCenters = useLoaderData();
+  const serviceCenters = (useLoaderData() as ServiceCenterItem[]) || [];
   // Extract unique regions
   const uniqueRegions = [...new Set(serviceCenters.map((w) => w.region))];
   // Get districts by region
-  const getDistrictsByRegion = (region) =>
-    serviceCenters.filter((w) => w.region === region).map((w) => w.district);
+  const getDistrictsByRegion = (region?: string): string[] =>
+    region
+      ? serviceCenters.filter((w) => w.region === region).map((w) => w.district)
+      : [];
 
   const parcelType = useWatch({ control, name: "type" });
   const senderRegion = useWatch({ control, name: "sender_region" });
   const receiverRegion = useWatch({ control, name: "receiver_region" });
 
-  const onSubmit = (data) => {
-    const weight = parseFloat(data.weight) || 0;
+  const onSubmit: SubmitHandler<SendParcelFormInputs> = (data) => {
+    const weight = parseFloat(String(data.weight)) || 0;
     const isSameDistrict = data.sender_center === data.receiver_center;
 
     let baseCost = 0;
@@ -110,7 +136,7 @@ const SendParcel = () => {
         const parcelData = {
           ...data,
           cost: totalCost,
-          created_by: user.email,
+          created_by: user?.email,
           payment_status: "unpaid",
           delivery_status: "not_collected",
           creation_date: new Date().toISOString(),
@@ -119,7 +145,6 @@ const SendParcel = () => {
 
         axiosSecure.post("/business", parcelData).then(async (res) => {
           if (res.data.insertedId) {
-            // TODO: redirect to a payment page
             Swal.fire({
               title: "Redirecting...",
               text: "Proceeding to payment gateway.",
@@ -131,8 +156,8 @@ const SendParcel = () => {
             await logTracking({
               tracking_id: parcelData.tracking_id,
               status: "parcel_created",
-              details: `Created by ${user.displayName}`,
-              updated_by: user.email,
+              details: `Created by ${user?.displayName || "User"}`,
+              updated_by: user?.email || undefined,
             });
 
             navigate("/dashboard/myParcels");
@@ -225,13 +250,13 @@ const SendParcel = () => {
                 {...register("sender_name", { required: true })}
                 className="input input-bordered w-full"
                 placeholder="Name"
-                defaultValue={user?.displayName}
+                defaultValue={user?.displayName || ""}
               />
               <input
                 {...register("sender_contact", { required: true })}
                 className="input input-bordered w-full"
                 placeholder="Contact"
-                defaultValue={user?.email}
+                defaultValue={user?.email || ""}
               />
               <select
                 {...register("sender_region", { required: true })}
@@ -320,7 +345,9 @@ const SendParcel = () => {
 
         {/* Submit Button */}
         <div className="text-center">
-          <button className="btn btn-primary text-black">Submit</button>
+          <button type="submit" className="btn btn-primary text-black">
+            Submit
+          </button>
         </div>
       </form>
     </div>
