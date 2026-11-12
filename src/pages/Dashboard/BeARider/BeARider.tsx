@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
-import { useLoaderData } from "react-router";
+import { useLoaderData } from "react-router-dom";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useTitle from "../../../hooks/useTitle";
 
@@ -35,12 +35,40 @@ const BeARider: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState("");
   const axiosSecure = useAxiosSecure();
 
-  const serviceCenters = (useLoaderData() as ServiceCenterLocation[]) || [];
+  const rawLoaderData = useLoaderData();
+  const [serviceCenters, setServiceCenters] = useState<ServiceCenterLocation[]>(() =>
+    Array.isArray(rawLoaderData) ? rawLoaderData : []
+  );
 
-  const regions = [...new Set(serviceCenters.map((s) => s.region))];
-  const districts = serviceCenters
-    .filter((s) => s.region === selectedRegion)
-    .map((s) => s.district);
+  useEffect(() => {
+    if (Array.isArray(rawLoaderData) && rawLoaderData.length > 0) {
+      setServiceCenters(rawLoaderData);
+    } else {
+      fetch("/serviceCenter.json")
+        .then((res) => {
+          if (!res.ok) return [];
+          const ct = res.headers.get("content-type") || "";
+          return ct.includes("application/json") ? res.json() : [];
+        })
+        .then((data) => {
+          if (Array.isArray(data) && data.length > 0) {
+            setServiceCenters(data);
+          }
+        })
+        .catch((err) => console.warn("Fallback service centers fetch error:", err));
+    }
+  }, [rawLoaderData]);
+
+  const regions = Array.isArray(serviceCenters)
+    ? [...new Set(serviceCenters.map((s) => s.region).filter(Boolean))]
+    : [];
+  const districts =
+    selectedRegion && Array.isArray(serviceCenters)
+      ? serviceCenters
+          .filter((s) => s.region === selectedRegion)
+          .map((s) => s.district)
+          .filter(Boolean)
+      : [];
 
   const onSubmit: SubmitHandler<RiderFormInputs> = async (data) => {
     const riderData = {

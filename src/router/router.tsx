@@ -27,6 +27,26 @@ import MyProfile from "../pages/Dashboard/MyProfile/MyProfile";
 import About from "../pages/About/About";
 import ErrorPage from "../components/ErrorPage";
 
+const serviceCenterLoader = async () => {
+  try {
+    const res = await fetch("/serviceCenter.json");
+    if (!res.ok) {
+      console.warn("Failed to load /serviceCenter.json, status:", res.status);
+      return [];
+    }
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      console.warn("serviceCenter.json returned non-JSON content-type:", contentType);
+      return [];
+    }
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.warn("Error fetching serviceCenter.json:", err);
+    return [];
+  }
+};
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -44,7 +64,7 @@ export const router = createBrowserRouter([
       {
         path: "coverage",
         Component: Coverage,
-        loader: () => fetch("./serviceCenter.json"),
+        loader: serviceCenterLoader,
       },
       {
         path: "/sendParcel",
@@ -53,7 +73,7 @@ export const router = createBrowserRouter([
             <SendParcel />
           </PrivateRoute>
         ),
-        loader: () => fetch("./serviceCenter.json"),
+        loader: serviceCenterLoader,
       },
       {
         path: "beARider",
@@ -62,7 +82,7 @@ export const router = createBrowserRouter([
             <BeARider />
           </PrivateRoute>
         ),
-        loader: () => fetch("./serviceCenter.json"),
+        loader: serviceCenterLoader,
       },
     ],
   },
