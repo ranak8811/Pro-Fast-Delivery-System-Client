@@ -5,6 +5,7 @@ import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface RiderParcel {
   _id: string;
@@ -18,6 +19,7 @@ interface RiderParcel {
 }
 
 const PendingDeliveries: React.FC = () => {
+  useTitle("Pending Deliveries");
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const { logTracking } = useTrackingLogger();
