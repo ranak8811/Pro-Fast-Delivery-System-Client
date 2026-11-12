@@ -4,12 +4,12 @@ import { FaLinkedinIn, FaFacebookF } from "react-icons/fa";
 import { FaXTwitter, FaYoutube } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer className="bg-[#20363A] text-white py-16 px-4">
       <div className="container mx-auto text-center">
         <div className="flex mx-auto text-white text-center justify-center">
-          <ProFastLogo isFooter={true}></ProFastLogo>
+          <ProFastLogo isFooter={true} />
         </div>
         <p className="max-w-xl mx-auto my-6">
           Enjoy fast, reliable parcel delivery with real-time tracking and zero
