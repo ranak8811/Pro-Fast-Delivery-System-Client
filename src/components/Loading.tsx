@@ -1,7 +1,7 @@
-// components/Loading.jsx
+import React from "react";
 import { FaTruckLoading } from "react-icons/fa";
 
-const Loading = () => {
+const Loading: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] bg-base-100 text-center px-4">
       {/* Animated truck icon */}
