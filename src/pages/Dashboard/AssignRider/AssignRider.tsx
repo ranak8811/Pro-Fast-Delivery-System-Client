@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import useAuth from "../../../hooks/useAuth";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface AssignableParcel {
   _id: string;
@@ -28,6 +29,7 @@ interface AvailableRider {
 }
 
 const AssignRider: React.FC = () => {
+  useTitle("Assign Rider");
   const axiosSecure = useAxiosSecure();
   const [selectedParcel, setSelectedParcel] = useState<AssignableParcel | null>(null);
   const [selectedRider, setSelectedRider] = useState<AvailableRider | null>(null);
