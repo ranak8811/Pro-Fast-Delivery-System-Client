@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 
 ChartJS.register(
@@ -21,7 +22,18 @@ ChartJS.register(
   Legend,
 );
 
-const RiderEarningsChart = ({ monthlyEarnings }) => {
+export interface MonthlyEarningItem {
+  month: string;
+  amount: number;
+}
+
+interface RiderEarningsChartProps {
+  monthlyEarnings: MonthlyEarningItem[];
+}
+
+const RiderEarningsChart: React.FC<RiderEarningsChartProps> = ({
+  monthlyEarnings,
+}) => {
   const labels = monthlyEarnings.map((item) => item.month);
   const dataValues = monthlyEarnings.map((item) => item.amount);
 
@@ -38,11 +50,11 @@ const RiderEarningsChart = ({ monthlyEarnings }) => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
       },
       title: {
         display: true,
