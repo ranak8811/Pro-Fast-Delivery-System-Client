@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { FaSearch, FaUserSlash } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface RiderData {
   _id: string;
@@ -17,6 +18,7 @@ interface RiderData {
 }
 
 const ActiveRiders: React.FC = () => {
+  useTitle("Active Riders");
   const axiosSecure = useAxiosSecure();
   const [searchTerm, setSearchTerm] = useState("");
 
