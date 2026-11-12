@@ -5,7 +5,6 @@ import {
   FaHome,
   FaBoxOpen,
   FaMoneyCheckAlt,
-  FaUserEdit,
   FaSearchLocation,
   FaUserCheck,
   FaUserClock,
@@ -15,20 +14,19 @@ import {
   FaCheckCircle,
   FaWallet,
   FaUser,
-  FaSignOutAlt, // Import FaSignOutAlt for logout icon
+  FaSignOutAlt,
 } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 
-const DashboardLayout = () => {
-  const { role, loading, logout } = useAuth(); // Destructure logout from useAuth
+const DashboardLayout: React.FC = () => {
+  const { role, loading, logout } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout()
       .then(() => {
         // Sign-out successful.
       })
       .catch((error) => {
-        // An error happened.
         console.error(error);
       });
   };
@@ -155,7 +153,7 @@ const DashboardLayout = () => {
 
   const bottomNavLinks = (
     <>
-      <div className="divider mt-auto"></div> {/* Add a divider */}
+      <div className="divider mt-auto"></div>
       <li>
         <NavLink
           to="/dashboard/my-profile"
@@ -166,7 +164,10 @@ const DashboardLayout = () => {
         </NavLink>
       </li>
       <li>
-        <button onClick={handleLogout} className={`w-full text-left py-2 px-4 rounded-md transition-colors duration-200 ${normalLink}`}>
+        <button
+          onClick={handleLogout}
+          className={`w-full text-left py-2 px-4 rounded-md transition-colors duration-200 ${normalLink}`}
+        >
           <FaSignOutAlt className="inline-block mr-2" />
           Logout
         </button>
@@ -219,7 +220,6 @@ const DashboardLayout = () => {
           className="drawer-overlay"
         ></label>
         <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content flex flex-col justify-between">
-          {/* Sidebar content here */}
           <div>
             <div className="p-4">
               <Link to="/">
