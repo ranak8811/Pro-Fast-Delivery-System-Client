@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "zap-shift-abec3",
     "public": "dist",
     "ignore": [
       "firebase.json",
