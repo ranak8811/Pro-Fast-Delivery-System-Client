@@ -1,11 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaSearch, FaUserShield, FaUserTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Loading from "../../../components/Loading";
 
-const MakeAdmin = () => {
+interface SearchUser {
+  _id: string;
+  email: string;
+  created_at: string;
+  role?: string;
+}
+
+const MakeAdmin: React.FC = () => {
   const axiosSecure = useAxiosSecure();
   const [emailQuery, setEmailQuery] = useState("");
 
@@ -13,9 +20,9 @@ const MakeAdmin = () => {
     data: users = [],
     refetch,
     isFetching,
-  } = useQuery({
+  } = useQuery<SearchUser[]>({
     queryKey: ["searchedUsers", emailQuery],
-    enabled: !!emailQuery, // Only run query if emailQuery is not empty
+    enabled: !!emailQuery,
     queryFn: async () => {
       const res = await axiosSecure.get(`/users/search?email=${emailQuery}`);
       return res.data;
@@ -23,14 +30,14 @@ const MakeAdmin = () => {
   });
 
   const { mutateAsync: updateRole } = useMutation({
-    mutationFn: async ({ id, role }) =>
+    mutationFn: async ({ id, role }: { id: string; role: string }) =>
       await axiosSecure.patch(`/users/${id}/role`, { role }),
     onSuccess: () => {
       refetch();
     },
   });
 
-  const handleRoleChange = async (id, currentRole) => {
+  const handleRoleChange = async (id: string, currentRole: string): Promise<void> => {
     const action = currentRole === "admin" ? "Remove admin" : "Make admin";
     const newRole = currentRole === "admin" ? "user" : "admin";
 
@@ -66,12 +73,11 @@ const MakeAdmin = () => {
           onChange={(e) => setEmailQuery(e.target.value)}
         />
       </div>
-      {isFetching && emailQuery && <Loading />}{" "}
-      {/* Only show loading if there's an actual query */}
+      {isFetching && emailQuery && <Loading />}
       {!isFetching && users.length === 0 && emailQuery && (
         <p className="text-gray-500">No users found for "{emailQuery}".</p>
       )}
-      {users.length > 0 && ( // Always show table if users are found, regardless of current emailQuery if it's cleared
+      {users.length > 0 && (
         <div className="overflow-x-auto">
           <table className="table w-full table-zebra">
             <thead>
@@ -122,12 +128,11 @@ const MakeAdmin = () => {
           </table>
         </div>
       )}
-      {!emailQuery &&
-        !isFetching && ( // Display a message when search is empty and not fetching
-          <p className="text-gray-500">
-            Start typing an email to search for users.
-          </p>
-        )}
+      {!emailQuery && !isFetching && (
+        <p className="text-gray-500">
+          Start typing an email to search for users.
+        </p>
+      )}
     </div>
   );
 };
