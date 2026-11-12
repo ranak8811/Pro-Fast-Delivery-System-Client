@@ -4,6 +4,7 @@ import { FaSearch, FaUserShield, FaUserTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 interface SearchUser {
   _id: string;
@@ -13,6 +14,7 @@ interface SearchUser {
 }
 
 const MakeAdmin: React.FC = () => {
+  useTitle("Make Admin");
   const axiosSecure = useAxiosSecure();
   const [emailQuery, setEmailQuery] = useState("");
 
