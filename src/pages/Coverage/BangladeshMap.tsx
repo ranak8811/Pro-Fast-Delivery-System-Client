@@ -1,19 +1,21 @@
+import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
+import L, { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useState } from "react";
 
-const position = [23.685, 90.3563]; // Center of Bangladesh
+const position: LatLngExpression = [23.685, 90.3563]; // Center of Bangladesh
 
-// Optional custom icon (can skip for default)
 const customIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
 
-// Helper component to move map
-function FlyToDistrict({ coords }) {
+interface FlyToDistrictProps {
+  coords: [number, number] | null;
+}
+
+function FlyToDistrict({ coords }: FlyToDistrictProps): null {
   const map = useMap();
   if (coords) {
     map.flyTo(coords, 14, { duration: 1.5 });
@@ -21,15 +23,26 @@ function FlyToDistrict({ coords }) {
   return null;
 }
 
-const BangladeshMap = ({ serviceCenters }) => {
-  const [searchText, setSearchText] = useState("");
-  const [activeCoords, setActiveCoords] = useState(null);
-  const [activeDistrict, setActiveDistrict] = useState(null);
+export interface ServiceCenter {
+  district: string;
+  latitude: number;
+  longitude: number;
+  covered_area: string[];
+}
 
-  const handleSearch = (e) => {
+interface BangladeshMapProps {
+  serviceCenters: ServiceCenter[];
+}
+
+const BangladeshMap: React.FC<BangladeshMapProps> = ({ serviceCenters }) => {
+  const [searchText, setSearchText] = useState("");
+  const [activeCoords, setActiveCoords] = useState<[number, number] | null>(null);
+  const [activeDistrict, setActiveDistrict] = useState<string | null>(null);
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const district = serviceCenters.find((d) =>
-      d.district.toLowerCase().includes(searchText.toLowerCase())
+      d.district.toLowerCase().includes(searchText.toLowerCase()),
     );
     if (district) {
       setActiveCoords([district.latitude, district.longitude]);
@@ -79,7 +92,7 @@ const BangladeshMap = ({ serviceCenters }) => {
             position={[center.latitude, center.longitude]}
             icon={customIcon}
           >
-            <Popup autoOpen={center.district === activeDistrict}>
+            <Popup autoPan={center.district === activeDistrict}>
               <strong>{center.district}</strong>
               <br />
               {center.covered_area.join(", ")}
