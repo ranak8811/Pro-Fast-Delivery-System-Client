@@ -5,8 +5,10 @@ import UserDashboard from "./UserDashboard";
 import RiderDashboard from "./RiderDashboard";
 import AdminDashboard from "./AdminDashboard";
 import Forbidden from "../../../components/Forbidden";
+import useTitle from "../../../hooks/useTitle";
 
 const DashboardHome: React.FC = () => {
+  useTitle("Dashboard");
   const { role, loading } = useAuth();
 
   if (loading) {
