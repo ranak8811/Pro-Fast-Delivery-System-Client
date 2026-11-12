@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_messagingSenderId: string;
   readonly VITE_appId: string;
   readonly VITE_STRIPE_PUBLIC_KEY?: string;
+  readonly VITE_payment_key?: string;
   readonly VITE_API_URL?: string;
   readonly VITE_imgbb_key?: string;
 }
