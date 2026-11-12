@@ -1,0 +1,28 @@
+import React from "react";
+import { FaTruckLoading } from "react-icons/fa";
+
+const Loading: React.FC = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-base-100 text-center px-4">
+      {/* Animated truck icon */}
+      <div className="animate-bounce text-primary text-6xl mb-4">
+        <FaTruckLoading />
+      </div>
+
+      {/* Main message */}
+      <h2 className="text-2xl font-semibold text-black">
+        Hang tight! We're loading your parcels...
+      </h2>
+
+      {/* Sub message */}
+      <p className="text-sm text-black-500 max-w-md mt-2">
+        Our system is carefully processing your delivery information.
+      </p>
+
+      {/* DaisyUI spinner for extra visual feedback */}
+      <span className="loading loading-spinner loading-lg text-primary mt-6"></span>
+    </div>
+  );
+};
+
+export default Loading;
