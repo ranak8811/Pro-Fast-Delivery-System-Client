@@ -1,7 +1,7 @@
 import React from "react";
 import location from "../../../assets/location-merchant.png";
 
-const BeMerchant = () => {
+const BeMerchant: React.FC = () => {
   return (
     <div
       data-aos="zoom-in-up"
