@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import authImg from "../assets/authImage.png";
 import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
 
-const AuthLayout = () => {
+const AuthLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-base-200 flex flex-col justify-center items-center">
       <div className="absolute top-4 left-4">
