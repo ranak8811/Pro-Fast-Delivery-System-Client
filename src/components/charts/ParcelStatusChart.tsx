@@ -1,10 +1,22 @@
 import React from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  ChartOptions,
+} from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const ParcelStatusChart = ({ parcelStatusCounts }) => {
+interface ParcelStatusChartProps {
+  parcelStatusCounts: Record<string, number>;
+}
+
+const ParcelStatusChart: React.FC<ParcelStatusChartProps> = ({
+  parcelStatusCounts,
+}) => {
   const data = {
     labels: Object.keys(parcelStatusCounts),
     datasets: [
@@ -28,11 +40,11 @@ const ParcelStatusChart = ({ parcelStatusCounts }) => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"pie"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
       },
       title: {
         display: true,
