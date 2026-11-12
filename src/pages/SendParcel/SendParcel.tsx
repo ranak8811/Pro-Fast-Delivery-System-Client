@@ -5,6 +5,7 @@ import { useLoaderData, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useTrackingLogger from "../../hooks/useTrackingLogger";
+import useTitle from "../../hooks/useTitle";
 
 interface ServiceCenterItem {
   region: string;
@@ -37,6 +38,7 @@ const generateTrackingID = (): string => {
 };
 
 const SendParcel: React.FC = () => {
+  useTitle("Send Parcel");
   const {
     register,
     handleSubmit,
