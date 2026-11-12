@@ -1,7 +1,8 @@
+import React from "react";
 import { FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Forbidden = () => {
+const Forbidden: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base-200 text-center px-4">
       <FaLock className="text-6xl text-error mb-4" />
