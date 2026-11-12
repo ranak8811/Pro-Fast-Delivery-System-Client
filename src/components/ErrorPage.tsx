@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useRouteError } from "react-router-dom";
 import { FaExclamationTriangle, FaHome } from "react-icons/fa";
+import useTitle from "../hooks/useTitle";
 
 interface RouteError {
   statusText?: string;
@@ -8,6 +9,7 @@ interface RouteError {
 }
 
 const ErrorPage: React.FC = () => {
+  useTitle("Error");
   const error = useRouteError() as RouteError | null;
 
   return (
