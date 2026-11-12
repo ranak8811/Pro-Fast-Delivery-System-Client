@@ -1,14 +1,28 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { Dialog, Transition } from "@headlessui/react";
-import { FaSearch, FaBoxOpen, FaTimes } from "react-icons/fa";
+import {
+  FaSearch,
+  FaBoxOpen,
+  FaTimes,
+  FaCopy,
+  FaCheckCircle,
+  FaTruck,
+  FaClock,
+  FaEye,
+  FaUserAlt,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+import toast from "react-hot-toast";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import useTitle from "../../../hooks/useTitle";
 import Loading from "../../../components/Loading";
 import AITrackingAssistantCard from "../../../components/AITrackingAssistantCard";
+import { DataTable, ColumnDef } from "../../../components/common/DataTable";
 import { Parcel } from "../../../types/parcel";
 
 interface TrackingEvent {
@@ -37,6 +51,14 @@ interface DetailedParcelTracking {
   trackingEvents?: TrackingEvent[];
 }
 
+interface PaginatedParcelsResponse {
+  data: Parcel[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 const TrackParcel: React.FC = () => {
   useTitle("Track Parcel");
   const { user, loading: authLoading } = useAuth();
@@ -48,6 +70,8 @@ const TrackParcel: React.FC = () => {
   const [selectedTrackingId, setSelectedTrackingId] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   // Sync route param or query param if present
   useEffect(() => {
@@ -59,16 +83,16 @@ const TrackParcel: React.FC = () => {
     }
   }, [routeTrackingId, queryTrackingId]);
 
-  function closeModal() {
+  const closeModal = () => {
     setIsOpen(false);
     setSelectedTrackingId(null);
-  }
+  };
 
-  function openModal(trackingId: string) {
+  const openModal = (trackingId: string) => {
     if (!trackingId) return;
     setSelectedTrackingId(trackingId);
     setIsOpen(true);
-  }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,21 +101,42 @@ const TrackParcel: React.FC = () => {
     }
   };
 
-  // Fetch all parcels for the logged-in user
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Tracking ID copied to clipboard!");
+  };
+
+  // Fetch all parcels for the logged-in user with pagination support
   const {
-    data: userParcels = [],
+    data: apiResponse,
     isLoading: parcelsLoading,
     isError: parcelsError,
     error: parcelsErrorObj,
-  } = useQuery<Parcel[], Error>({
-    queryKey: ["userParcels", user?.email],
+  } = useQuery<PaginatedParcelsResponse | Parcel[], Error>({
+    queryKey: ["userParcels", user?.email, page, pageSize],
     queryFn: async () => {
       if (!user?.email) return [];
-      const res = await axiosSecure.get(`/users/parcels?email=${encodeURIComponent(user.email)}`);
+      const res = await axiosSecure.get(
+        `/users/parcels?email=${encodeURIComponent(user.email)}&page=${page}&limit=${pageSize}`
+      );
       return res.data;
     },
     enabled: Boolean(user?.email && !authLoading),
   });
+
+  const isPaginated =
+    apiResponse && !Array.isArray(apiResponse) && "data" in (apiResponse as any);
+  const parcels: Parcel[] = isPaginated
+    ? (apiResponse as PaginatedParcelsResponse).data
+    : Array.isArray(apiResponse)
+    ? apiResponse
+    : [];
+  const totalCount: number = isPaginated
+    ? (apiResponse as PaginatedParcelsResponse).total
+    : parcels.length;
+  const totalPages: number = isPaginated
+    ? (apiResponse as PaginatedParcelsResponse).totalPages
+    : Math.ceil(parcels.length / pageSize) || 1;
 
   // Fetch detailed tracking data for the selected parcel (for modal)
   const {
@@ -111,110 +156,220 @@ const TrackParcel: React.FC = () => {
     enabled: Boolean(selectedTrackingId && isOpen),
   });
 
-  if (parcelsLoading || authLoading) {
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "delivered":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+            <FaCheckCircle className="text-emerald-500 text-xs" />
+            Delivered
+          </span>
+        );
+      case "in_transit":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-600 border border-sky-500/20">
+            <FaTruck className="text-sky-500 text-xs" />
+            In Transit
+          </span>
+        );
+      case "rider_assigned":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 border border-indigo-500/20">
+            <FaTruck className="text-indigo-500 text-xs" />
+            Rider Assigned
+          </span>
+        );
+      case "cancelled":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
+            Cancelled
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+            <FaClock className="text-amber-500 text-xs" />
+            {status ? status.replace(/_/g, " ") : "Pending"}
+          </span>
+        );
+    }
+  };
+
+  const columns: ColumnDef<Parcel>[] = [
+    {
+      header: "Tracking ID",
+      accessorKey: "tracking_id",
+      render: (item: Parcel) => (
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs font-bold text-base-content bg-base-200/70 px-2 py-0.5 rounded border border-base-300">
+            {item.tracking_id}
+          </span>
+          <button
+            onClick={() => copyToClipboard(item.tracking_id)}
+            title="Copy Tracking ID"
+            className="p-1 rounded text-base-content/40 hover:text-base-content hover:bg-base-200 transition-colors"
+          >
+            <FaCopy className="text-xs" />
+          </button>
+        </div>
+      ),
+    },
+    {
+      header: "Sender",
+      accessorKey: "sender_name",
+      render: (item: Parcel) => (
+        <div className="flex flex-col text-xs">
+          <span className="font-semibold text-base-content flex items-center gap-1">
+            <FaUserAlt className="text-base-content/40 text-[10px]" />
+            {item.sender_name || "N/A"}
+          </span>
+          {item.sender_contact && (
+            <span className="text-base-content/60 flex items-center gap-1 mt-0.5">
+              <FaPhoneAlt className="text-base-content/40 text-[10px]" />
+              {item.sender_contact}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: "Receiver",
+      accessorKey: "receiver_name",
+      render: (item: Parcel) => (
+        <div className="flex flex-col text-xs">
+          <span className="font-semibold text-base-content flex items-center gap-1">
+            <FaUserAlt className="text-base-content/40 text-[10px]" />
+            {item.receiver_name || "N/A"}
+          </span>
+          {item.receiver_district && (
+            <span className="text-base-content/60 flex items-center gap-1 mt-0.5">
+              <FaMapMarkerAlt className="text-base-content/40 text-[10px]" />
+              {item.receiver_district}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: "Status",
+      accessorKey: "delivery_status",
+      render: (item: Parcel) => getStatusBadge(item.delivery_status),
+    },
+    {
+      header: "Created Date",
+      accessorKey: "creation_date",
+      render: (item: Parcel) => (
+        <span className="text-xs text-base-content/70">
+          {item.creation_date
+            ? format(parseISO(item.creation_date), "MMM dd, yyyy")
+            : "N/A"}
+        </span>
+      ),
+    },
+    {
+      header: "Action",
+      className: "text-right",
+      render: (item: Parcel) => (
+        <div className="flex justify-end">
+          <button
+            onClick={() => openModal(item.tracking_id)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#20363A] text-white hover:bg-[#20363A]/90 transition-all shadow-xs"
+          >
+            <FaEye className="text-xs text-[#CAEB66]" />
+            Track Details
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  if (authLoading) {
     return <Loading />;
   }
 
-  if (parcelsError) {
-    return (
-      <div className="alert alert-error max-w-xl mx-auto my-8">
-        <span>Error loading parcels: {parcelsErrorObj?.message || "Unknown error occurred"}</span>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-base-content tracking-tight">
-          Track Your Parcels
-        </h2>
-        <p className="text-base-content/70 mt-2 text-sm md:text-base">
-          Real-time updates powered by AI Smart Tracking Assistant
-        </p>
-      </div>
-
-      {/* Direct Search Bar */}
-      <div className="max-w-xl mx-auto mb-8 bg-base-100 p-3 md:p-4 rounded-2xl shadow-sm border border-base-200">
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Search by Tracking ID (e.g. PCL-20260126-3Z0HU)..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="input input-bordered w-full focus:input-primary text-sm"
-            />
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
+      {/* Header Banner */}
+      <div className="bg-[#20363A] rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-xl">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-[#CAEB66]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#CAEB66] text-xs font-medium mb-3 backdrop-blur-md">
+            <FaTruck className="text-xs" /> Live Tracking Center
           </div>
-          <button
-            type="submit"
-            disabled={!searchInput.trim()}
-            className="btn btn-primary gap-2 text-sm"
-          >
-            <FaSearch />
-            Track
-          </button>
-        </form>
+          <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight mb-2">
+            Track Any Shipment
+          </h1>
+          <p className="text-white/70 text-sm md:text-base leading-relaxed">
+            Enter your unique parcel tracking code for instant, real-time AI status prediction, carrier location updates, and delivery timelines.
+          </p>
+
+          {/* Search bar inside header */}
+          <form onSubmit={handleSearchSubmit} className="mt-6 flex flex-col sm:flex-row gap-2 max-w-lg">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Enter tracking ID (e.g. PCL-20260126-3Z0HU)..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-white text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#CAEB66] shadow-sm font-mono"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={!searchInput.trim()}
+              className="px-6 py-3 rounded-xl bg-[#CAEB66] text-[#20363A] font-bold text-sm hover:bg-[#bfe259] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
+            >
+              <FaSearch className="text-xs" />
+              Track Now
+            </button>
+          </form>
+        </div>
       </div>
 
-      {/* Parcels Table */}
-      {userParcels.length === 0 ? (
-        <div className="text-center bg-base-100 p-8 rounded-2xl border border-base-200 shadow-sm max-w-lg mx-auto">
-          <FaBoxOpen className="mx-auto text-4xl text-base-content/40 mb-3" />
-          <h3 className="text-lg font-semibold text-base-content">No parcels found</h3>
-          <p className="text-sm text-base-content/60 mt-1">
-            You have not created any parcels yet. Enter a Tracking ID above to track any existing parcel.
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto bg-base-100 p-4 md:p-6 rounded-2xl shadow-sm border border-base-200">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr className="text-base-content/70 text-xs md:text-sm">
-                <th>Tracking ID</th>
-                <th>Sender</th>
-                <th>Receiver</th>
-                <th>Status</th>
-                <th>Creation Date</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userParcels.map((parcel) => (
-                <tr key={parcel._id || parcel.tracking_id} className="hover">
-                  <td className="font-mono text-xs md:text-sm font-semibold text-primary">
-                    {parcel.tracking_id}
-                  </td>
-                  <td>{parcel.sender_name}</td>
-                  <td>{parcel.receiver_name}</td>
-                  <td>
-                    {parcel.delivery_status === "delivered" ? (
-                      <span className="badge badge-success badge-sm font-medium">Delivered</span>
-                    ) : (
-                      <span className="badge badge-info badge-sm font-medium capitalize">
-                        {parcel.delivery_status?.replace(/_/g, " ") || "Pending"}
-                      </span>
-                    )}
-                  </td>
-                  <td className="text-xs md:text-sm text-base-content/70">
-                    {parcel.creation_date
-                      ? format(parseISO(parcel.creation_date), "PPP")
-                      : "N/A"}
-                  </td>
-                  <td className="text-right">
-                    <button
-                      className="btn btn-sm btn-outline btn-primary gap-1"
-                      onClick={() => openModal(parcel.tracking_id)}
-                    >
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {parcelsError && (
+        <div className="alert alert-error max-w-xl mx-auto my-4 text-sm">
+          <span>Error loading parcels: {parcelsErrorObj?.message || "Unknown error occurred"}</span>
         </div>
       )}
+
+      {/* Parcels Table with Server Pagination */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold text-base-content">
+              Your Recent Parcels
+            </h2>
+            <p className="text-xs text-base-content/60">
+              Select any parcel to view live events and AI milestone analysis
+            </p>
+          </div>
+          <div className="text-xs font-semibold text-base-content/60">
+            Total {totalCount} {totalCount === 1 ? "parcel" : "parcels"}
+          </div>
+        </div>
+
+        <DataTable<Parcel>
+          columns={columns}
+          data={parcels}
+          isLoading={parcelsLoading}
+          keyExtractor={(item) => item._id || item.tracking_id}
+          emptyIcon={<FaBoxOpen className="text-3xl text-slate-400" />}
+          emptyMessage="No shipments found"
+          emptySubtext="You have not created any parcels yet. Enter a Tracking ID above to track any existing parcel."
+          pagination={{
+            page: page,
+            totalPages: totalPages,
+            pageSize: pageSize,
+            totalItems: totalCount,
+            onPageChange: (newPage) => setPage(newPage),
+            onPageSizeChange: (newPageSize) => {
+              setPageSize(newPageSize);
+              setPage(1);
+            },
+            pageSizeOptions: [5, 10, 20, 50],
+          }}
+        />
+      </div>
 
       {/* Modal for detailed tracking with AI Assistant Card */}
       <Transition appear show={isOpen} as={Fragment}>
@@ -228,7 +383,7 @@ const TrackParcel: React.FC = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" />
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -242,24 +397,31 @@ const TrackParcel: React.FC = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-base-100 p-6 text-left align-middle shadow-2xl transition-all border border-base-200">
-                  <div className="flex items-center justify-between pb-3 border-b border-base-200">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-lg md:text-xl font-bold text-base-content"
-                    >
-                      Parcel Tracking Details
-                    </Dialog.Title>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-base-100 p-6 md:p-8 text-left align-middle shadow-2xl transition-all border border-base-200">
+                  <div className="flex items-center justify-between pb-4 border-b border-base-200">
+                    <div>
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg md:text-xl font-extrabold text-base-content"
+                      >
+                        Parcel Tracking Information
+                      </Dialog.Title>
+                      {selectedTrackingId && (
+                        <p className="text-xs text-base-content/60 font-mono mt-0.5">
+                          ID: {selectedTrackingId}
+                        </p>
+                      )}
+                    </div>
                     <button
                       onClick={closeModal}
-                      className="btn btn-sm btn-circle btn-ghost"
+                      className="p-2 rounded-xl text-base-content/40 hover:text-base-content hover:bg-base-200 transition-colors"
                       aria-label="Close"
                     >
-                      <FaTimes />
+                      <FaTimes className="text-sm" />
                     </button>
                   </div>
 
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-5 space-y-4 max-h-[70vh] overflow-y-auto pr-1">
                     {/* Integrated AI Smart Tracking Assistant Card */}
                     {selectedTrackingId && (
                       <AITrackingAssistantCard
@@ -283,56 +445,76 @@ const TrackParcel: React.FC = () => {
                     {detailedTrackingData && detailedTrackingData.parcel && (
                       <div className="space-y-4">
                         {/* Basic Info */}
-                        <div className="bg-base-200/50 p-4 rounded-xl border border-base-200">
-                          <h4 className="text-sm font-semibold mb-3 text-base-content/80">
-                            Basic Information
+                        <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200/80">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3">
+                            Parcel Overview
                           </h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs md:text-sm">
-                            <p>
-                              <strong className="text-base-content/70">Tracking ID:</strong>{" "}
-                              <span className="font-mono">{detailedTrackingData.parcel.tracking_id}</span>
-                            </p>
-                            <p>
-                              <strong className="text-base-content/70">Status:</strong>{" "}
-                              <span className="capitalize">
+                          <div className="grid grid-cols-2 gap-3 text-xs md:text-sm">
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Tracking ID</span>
+                              <span className="font-mono font-bold text-base-content">
+                                {detailedTrackingData.parcel.tracking_id}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Delivery Status</span>
+                              <span className="capitalize font-semibold text-base-content">
                                 {detailedTrackingData.parcel.delivery_status?.replace(/_/g, " ")}
                               </span>
-                            </p>
-                            <p>
-                              <strong className="text-base-content/70">Cost:</strong> $
-                              {detailedTrackingData.parcel.cost}
-                            </p>
-                            <p>
-                              <strong className="text-base-content/70">Sender:</strong>{" "}
-                              {detailedTrackingData.parcel.sender_name}
-                            </p>
-                            <p>
-                              <strong className="text-base-content/70">Receiver:</strong>{" "}
-                              {detailedTrackingData.parcel.receiver_name}
-                            </p>
+                            </div>
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Cost</span>
+                              <span className="font-bold text-base-content">
+                                ${detailedTrackingData.parcel.cost}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Payment</span>
+                              <span className="capitalize font-semibold text-base-content">
+                                {detailedTrackingData.parcel.payment_status}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Sender</span>
+                              <span className="font-medium text-base-content">
+                                {detailedTrackingData.parcel.sender_name}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-base-content/60 block text-[11px]">Receiver</span>
+                              <span className="font-medium text-base-content">
+                                {detailedTrackingData.parcel.receiver_name}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
                         {/* Rider Info */}
                         {detailedTrackingData.riderDetails && (
-                          <div className="bg-base-200/50 p-4 rounded-xl border border-base-200">
-                            <h4 className="text-sm font-semibold mb-3 text-base-content/80">
-                              Assigned Rider
+                          <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200/80">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3">
+                              Assigned Courier Rider
                             </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs md:text-sm">
-                              <p>
-                                <strong className="text-base-content/70">Name:</strong>{" "}
-                                {detailedTrackingData.riderDetails.name}
-                              </p>
-                              <p>
-                                <strong className="text-base-content/70">Contact:</strong>{" "}
-                                {detailedTrackingData.riderDetails.phone}
-                              </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs md:text-sm">
+                              <div>
+                                <span className="text-base-content/60 block text-[11px]">Courier Name</span>
+                                <span className="font-bold text-base-content">
+                                  {detailedTrackingData.riderDetails.name}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-base-content/60 block text-[11px]">Phone</span>
+                                <span className="font-medium text-base-content">
+                                  {detailedTrackingData.riderDetails.phone}
+                                </span>
+                              </div>
                               {detailedTrackingData.riderDetails.bike_brand && (
-                                <p>
-                                  <strong className="text-base-content/70">Vehicle:</strong>{" "}
-                                  {detailedTrackingData.riderDetails.bike_brand}
-                                </p>
+                                <div>
+                                  <span className="text-base-content/60 block text-[11px]">Vehicle</span>
+                                  <span className="font-medium text-base-content">
+                                    {detailedTrackingData.riderDetails.bike_brand}
+                                  </span>
+                                </div>
                               )}
                             </div>
                           </div>
@@ -340,30 +522,34 @@ const TrackParcel: React.FC = () => {
 
                         {/* Payment Info */}
                         {detailedTrackingData.paymentDetails && (
-                          <div className="bg-base-200/50 p-4 rounded-xl border border-base-200">
-                            <h4 className="text-sm font-semibold mb-3 text-base-content/80">
+                          <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200/80">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3">
                               Payment Summary
                             </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs md:text-sm">
-                              <p>
-                                <strong className="text-base-content/70">Amount:</strong> $
-                                {detailedTrackingData.paymentDetails.amount}
-                              </p>
-                              <p>
-                                <strong className="text-base-content/70">Txn ID:</strong>{" "}
-                                <span className="font-mono text-xs">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs md:text-sm">
+                              <div>
+                                <span className="text-base-content/60 block text-[11px]">Amount</span>
+                                <span className="font-bold text-emerald-600">
+                                  ${detailedTrackingData.paymentDetails.amount}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-base-content/60 block text-[11px]">Transaction ID</span>
+                                <span className="font-mono text-xs text-base-content/80">
                                   {detailedTrackingData.paymentDetails.transactionId}
                                 </span>
-                              </p>
-                              <p>
-                                <strong className="text-base-content/70">Paid At:</strong>{" "}
-                                {detailedTrackingData.paymentDetails.paid_at
-                                  ? format(
-                                      parseISO(detailedTrackingData.paymentDetails.paid_at),
-                                      "PPP p"
-                                    )
-                                  : "N/A"}
-                              </p>
+                              </div>
+                              <div>
+                                <span className="text-base-content/60 block text-[11px]">Paid At</span>
+                                <span className="text-xs text-base-content/80">
+                                  {detailedTrackingData.paymentDetails.paid_at
+                                    ? format(
+                                        parseISO(detailedTrackingData.paymentDetails.paid_at),
+                                        "PPP p"
+                                      )
+                                    : "N/A"}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -371,9 +557,9 @@ const TrackParcel: React.FC = () => {
                         {/* Event Timeline */}
                         {detailedTrackingData.trackingEvents &&
                           detailedTrackingData.trackingEvents.length > 0 && (
-                            <div className="bg-base-200/50 p-4 rounded-xl border border-base-200">
-                              <h4 className="text-sm font-semibold mb-3 text-base-content/80">
-                                Event Timeline
+                            <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200/80">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3">
+                                Status Timeline
                               </h4>
                               <ul className="timeline timeline-vertical">
                                 {detailedTrackingData.trackingEvents.map((event, index) => (
@@ -384,7 +570,7 @@ const TrackParcel: React.FC = () => {
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
-                                        className="w-5 h-5 text-primary"
+                                        className="w-5 h-5 text-[#20363A]"
                                       >
                                         <path
                                           fillRule="evenodd"
@@ -393,8 +579,8 @@ const TrackParcel: React.FC = () => {
                                         />
                                       </svg>
                                     </div>
-                                    <div className="timeline-end timeline-box mb-6 bg-base-100 shadow-xs border border-base-200">
-                                      <time className="font-mono italic text-xs text-base-content/60">
+                                    <div className="timeline-end timeline-box mb-4 bg-base-100 shadow-xs border border-base-200 rounded-xl p-3">
+                                      <time className="font-mono text-[11px] text-base-content/60">
                                         {event.time
                                           ? format(parseISO(event.time), "PPP p")
                                           : ""}
@@ -422,10 +608,10 @@ const TrackParcel: React.FC = () => {
                   <div className="mt-6 flex justify-end">
                     <button
                       type="button"
-                      className="btn btn-sm btn-ghost"
+                      className="px-5 py-2.5 rounded-xl bg-base-200 hover:bg-base-300 text-xs font-semibold text-base-content transition-colors"
                       onClick={closeModal}
                     >
-                      Close
+                      Close Details
                     </button>
                   </div>
                 </Dialog.Panel>
