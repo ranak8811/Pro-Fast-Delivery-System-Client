@@ -1,8 +1,8 @@
 import React from "react";
-import ServiceCard from "./ServiceCard";
+import ServiceCard, { ServiceItem } from "./ServiceCard";
 import bookingIcon from "../../../assets/bookingIcon.png";
 
-const servicesData = [
+const servicesData: ServiceItem[] = [
   {
     title: "Express & Standard Delivery",
     description:
@@ -41,7 +41,7 @@ const servicesData = [
   },
 ];
 
-const Services = () => {
+const Services: React.FC = () => {
   return (
     <section
       className="py-16 px-4 rounded-2xl"
