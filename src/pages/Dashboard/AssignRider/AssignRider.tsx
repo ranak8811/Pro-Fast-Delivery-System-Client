@@ -1,37 +1,63 @@
+import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FaMotorcycle } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { useState } from "react";
 import Swal from "sweetalert2";
 import useTrackingLogger from "../../../hooks/useTrackingLogger";
 import useAuth from "../../../hooks/useAuth";
 import Loading from "../../../components/Loading";
 
-const AssignRider = () => {
+interface AssignableParcel {
+  _id: string;
+  tracking_id: string;
+  title: string;
+  type: string;
+  sender_center: string;
+  receiver_center: string;
+  cost: number;
+  creation_date: string;
+}
+
+interface AvailableRider {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  bike_brand: string;
+  bike_registration: string;
+}
+
+const AssignRider: React.FC = () => {
   const axiosSecure = useAxiosSecure();
-  const [selectedParcel, setSelectedParcel] = useState(null);
-  const [selectedRider, setSelectedRider] = useState(null);
-  const [riders, setRiders] = useState([]);
+  const [selectedParcel, setSelectedParcel] = useState<AssignableParcel | null>(null);
+  const [selectedRider, setSelectedRider] = useState<AvailableRider | null>(null);
+  const [riders, setRiders] = useState<AvailableRider[]>([]);
   const [loadingRiders, setLoadingRiders] = useState(false);
   const queryClient = useQueryClient();
   const { logTracking } = useTrackingLogger();
   const { user } = useAuth();
 
-  const { data: parcels = [], isLoading } = useQuery({
+  const { data: parcels = [], isLoading } = useQuery<AssignableParcel[]>({
     queryKey: ["assignableParcels"],
     queryFn: async () => {
       const res = await axiosSecure.get(
         "/business?payment_status=paid&delivery_status=not_collected",
       );
-      // Sort oldest first
       return res.data.sort(
-        (a, b) => new Date(a.creation_date) - new Date(b.creation_date),
+        (a: AssignableParcel, b: AssignableParcel) =>
+          new Date(a.creation_date).getTime() - new Date(b.creation_date).getTime(),
       );
     },
   });
 
   const { mutateAsync: assignRider } = useMutation({
-    mutationFn: async ({ parcelId, rider }) => {
+    mutationFn: async ({
+      parcelId,
+      rider,
+    }: {
+      parcelId: string;
+      rider: AvailableRider;
+    }) => {
       setSelectedRider(rider);
       const res = await axiosSecure.patch(`/business/${parcelId}/assign`, {
         riderId: rider._id,
@@ -41,17 +67,20 @@ const AssignRider = () => {
       return res.data;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries(["assignableParcels"]);
+      queryClient.invalidateQueries({ queryKey: ["assignableParcels"] });
       Swal.fire("Success", "Rider assigned successfully!", "success");
 
       // track rider assigned
-      await logTracking({
-        tracking_id: selectedParcel.tracking_id,
-        status: "rider_assigned",
-        details: `Assigned to ${selectedRider.name}`,
-        updated_by: user.email,
-      });
-      document.getElementById("assignModal").close();
+      if (selectedParcel && selectedRider) {
+        await logTracking({
+          tracking_id: selectedParcel.tracking_id,
+          status: "rider_assigned",
+          details: `Assigned to ${selectedRider.name}`,
+          updated_by: user?.email || undefined,
+        });
+      }
+      const dialog = document.getElementById("assignModal") as HTMLDialogElement | null;
+      dialog?.close();
     },
     onError: () => {
       Swal.fire("Error", "Failed to assign rider", "error");
@@ -59,7 +88,7 @@ const AssignRider = () => {
   });
 
   // Step 2: Open modal and load matching riders
-  const openAssignModal = async (parcel) => {
+  const openAssignModal = async (parcel: AssignableParcel): Promise<void> => {
     setSelectedParcel(parcel);
     setLoadingRiders(true);
     setRiders([]);
@@ -67,7 +96,7 @@ const AssignRider = () => {
     try {
       const res = await axiosSecure.get("/employee/available", {
         params: {
-          district: parcel.sender_center, // match with rider.district
+          district: parcel.sender_center,
         },
       });
       setRiders(res.data);
@@ -76,7 +105,8 @@ const AssignRider = () => {
       Swal.fire("Error", "Failed to load riders", "error");
     } finally {
       setLoadingRiders(false);
-      document.getElementById("assignModal").showModal();
+      const dialog = document.getElementById("assignModal") as HTMLDialogElement | null;
+      dialog?.showModal();
     }
   };
 
@@ -126,7 +156,7 @@ const AssignRider = () => {
               ))}
             </tbody>
           </table>
-          {/* 🛵 Assign Rider Modal */}
+          {/* Assign Rider Modal */}
           <dialog id="assignModal" className="modal">
             <div className="modal-box max-w-2xl">
               <h3 className="text-lg font-bold mb-3">
@@ -161,12 +191,14 @@ const AssignRider = () => {
                           </td>
                           <td>
                             <button
-                              onClick={() =>
-                                assignRider({
-                                  parcelId: selectedParcel._id,
-                                  rider,
-                                })
-                              }
+                              onClick={() => {
+                                if (selectedParcel) {
+                                  assignRider({
+                                    parcelId: selectedParcel._id,
+                                    rider,
+                                  });
+                                }
+                              }}
                               className="btn btn-xs btn-success"
                             >
                               Assign
