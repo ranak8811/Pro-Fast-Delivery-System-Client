@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-const faqData = [
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+const faqData: FAQItem[] = [
   {
     question: "What areas do you deliver to?",
     answer:
@@ -29,12 +34,13 @@ const faqData = [
   },
 ];
 
-const FAQ = () => {
-  const [open, setOpen] = useState(0);
+const FAQ: React.FC = () => {
+  const [open, setOpen] = useState<number | null>(0);
 
-  const toggle = (index) => {
+  const toggle = (index: number): void => {
     if (open === index) {
-      return setOpen(null);
+      setOpen(null);
+      return;
     }
     setOpen(index);
   };
