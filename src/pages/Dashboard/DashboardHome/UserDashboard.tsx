@@ -6,7 +6,22 @@ import Loading from "../../../components/Loading";
 import ParcelStatusChart from "../../../components/charts/ParcelStatusChart";
 import SpendingHistoryChart from "../../../components/charts/SpendingHistoryChart";
 
-const UserDashboard = () => {
+interface RecentParcel {
+  _id: string;
+  status: string;
+  origin: string;
+  destination: string;
+  creation_date: string;
+}
+
+interface UserDashboardSummary {
+  totalParcels?: number;
+  parcelStatusCounts?: Record<string, number>;
+  recentParcels?: RecentParcel[];
+  spendingHistory?: { month: string; amount: number }[];
+}
+
+const UserDashboard: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
@@ -15,12 +30,12 @@ const UserDashboard = () => {
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<UserDashboardSummary>({
     queryKey: ["userDashboardSummary", user?.email],
     queryFn: async () => {
       if (!user?.email) return {};
       const res = await axiosSecure.get(
-        `/users/dashboard-summary-for-user?email=${user?.email}&_=${Date.now()}`, // Add timestamp to bypass cache
+        `/users/dashboard-summary-for-user?email=${user?.email}&_=${Date.now()}`,
       );
       return res.data;
     },
@@ -34,12 +49,12 @@ const UserDashboard = () => {
   if (isError) {
     return (
       <div className="text-red-500">
-        Error loading dashboard: {error.message}
+        Error loading dashboard: {error instanceof Error ? error.message : "Unknown error"}
       </div>
     );
   }
 
-  const { totalParcels, parcelStatusCounts, recentParcels, spendingHistory } =
+  const { totalParcels = 0, parcelStatusCounts = {}, recentParcels = [], spendingHistory = [] } =
     userDashboardSummary;
   return (
     <div className="p-4">
@@ -50,7 +65,6 @@ const UserDashboard = () => {
           <h3 className="text-xl font-semibold text-gray-700">Total Parcels</h3>
           <p className="text-4xl font-bold text-indigo-600">{totalParcels}</p>
         </div>
-        {/* You can add more summary cards here */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
