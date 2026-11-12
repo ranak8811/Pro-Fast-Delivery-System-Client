@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, ChangeEvent } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "../SocialLogin /SocialLogin";
@@ -7,24 +7,30 @@ import axios from "axios";
 import useAxios from "../../../hooks/useAxios";
 import toast from "react-hot-toast";
 
-const Register = () => {
+interface RegisterFormInputs {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const Register: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<RegisterFormInputs>();
   const { createUser, updateUserProfile } = useAuth();
-  const [profilePic, setProfilePic] = React.useState(null);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const axiosInstance = useAxios();
   const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.from || "/";
+  const from = (location.state as { from?: string })?.from || "/";
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<RegisterFormInputs> = (data) => {
     const toastId = toast.loading("Creating account...");
     createUser(data.email, data.password)
-      .then(async (result) => {
+      .then(async () => {
         // update user info in database
         const userInfo = {
           email: data.email,
@@ -33,7 +39,7 @@ const Register = () => {
           last_log_in: new Date().toISOString(),
         };
 
-        const userRes = await axiosInstance.post("/users", userInfo);
+        await axiosInstance.post("/users", userInfo);
 
         // update user info in firebase
         const userProfile = {
@@ -59,12 +65,14 @@ const Register = () => {
       });
   };
 
-  const handleImageUpload = async (e) => {
-    const image = e.target.files[0];
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const image = files[0];
     const formData = new FormData();
     formData.append("image", image);
     const imageUploadURL = `https://api.imgbb.com/1/upload?&key=${
-      import.meta.env.VITE_imgbb_key
+      import.meta.env.VITE_imgbb_key || ""
     }`;
     const res = await axios.post(imageUploadURL, formData);
     setProfilePic(res.data.data.url);
@@ -84,11 +92,12 @@ const Register = () => {
               className="input"
               placeholder="Your Name"
             />
-            {errors.email?.type === "required" && (
+            {errors.name?.type === "required" && (
               <p className="text-red-500">Name is required</p>
             )}
-            {/* name field */}
-            <label className="label">Your Name</label>
+
+            {/* profile picture field */}
+            <label className="label">Profile Picture</label>
             <input
               type="file"
               onChange={handleImageUpload}
@@ -107,6 +116,7 @@ const Register = () => {
             {errors.email?.type === "required" && (
               <p className="text-red-500">Email is required</p>
             )}
+
             {/* password field*/}
             <label className="label">Password</label>
             <div className="relative">
@@ -136,7 +146,7 @@ const Register = () => {
             <div>
               <a className="link link-hover">Forgot password?</a>
             </div>
-            <button className="btn btn-primary text-black mt-4">
+            <button type="submit" className="btn btn-primary text-black mt-4">
               Register
             </button>
           </fieldset>
@@ -149,7 +159,7 @@ const Register = () => {
             </small>
           </p>
         </form>
-        <SocialLogin></SocialLogin>
+        <SocialLogin />
       </div>
     </div>
   );
