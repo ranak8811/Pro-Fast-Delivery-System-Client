@@ -72,7 +72,7 @@ const Register: React.FC = () => {
     const formData = new FormData();
     formData.append("image", image);
     const imageUploadURL = `https://api.imgbb.com/1/upload?&key=${
-      import.meta.env.VITE_imgbb_key || ""
+      import.meta.env.VITE_imgbb_key || import.meta.env.VITE_IMGBB_KEY || ""
     }`;
     const res = await axios.post(imageUploadURL, formData);
     setProfilePic(res.data.data.url);

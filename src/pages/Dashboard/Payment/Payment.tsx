@@ -4,7 +4,10 @@ import React from "react";
 import PaymentForm from "./PaymentForm";
 
 const stripeKey =
-  import.meta.env.VITE_payment_key || import.meta.env.VITE_STRIPE_PUBLIC_KEY || "";
+  import.meta.env.VITE_payment_key ||
+  import.meta.env.VITE_PAYMENT_KEY ||
+  import.meta.env.VITE_STRIPE_PUBLIC_KEY ||
+  "";
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 const Payment: React.FC = () => {
