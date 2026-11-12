@@ -1,57 +1,82 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react"; // Import useState
+import React, { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
-const MyParcels = () => {
+interface ParcelItem {
+  _id: string;
+  tracking_id?: string;
+  title: string;
+  type: string;
+  weight?: string | number;
+  cost: number;
+  payment_status: string;
+  delivery_status: string;
+  creation_date: string;
+  created_by?: string;
+  sender_name?: string;
+  sender_contact?: string;
+  sender_region?: string;
+  sender_center?: string;
+  sender_address?: string;
+  pickup_instruction?: string;
+  receiver_name?: string;
+  receiver_contact?: string;
+  receiver_region?: string;
+  receiver_center?: string;
+  receiver_address?: string;
+  delivery_instruction?: string;
+}
+
+const MyParcels: React.FC = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [selectedParcel, setSelectedParcel] = useState(null); // State for selected parcel data
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedParcel, setSelectedParcel] = useState<ParcelItem | null>(null);
 
-  const { data: parcels = [], refetch } = useQuery({
-    queryKey: ["my-parcels", user.email],
+  const { data: parcels = [], refetch } = useQuery<ParcelItem[]>({
+    queryKey: ["my-parcels", user?.email],
     queryFn: async () => {
+      if (!user?.email) return [];
       const res = await axiosSecure.get(`/business?email=${user.email}`);
       return res.data;
     },
+    enabled: !!user?.email,
   });
 
-  const handleView = (parcel) => {
+  const handleView = (parcel: ParcelItem): void => {
     setSelectedParcel(parcel);
     setShowModal(true);
   };
 
-  const handlePay = (id) => {
-    // Implement your payment logic
+  const handlePay = (id: string): void => {
     navigate(`/dashboard/payment/${id}`);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string): Promise<void> => {
     const confirm = window.confirm(
-      "Are you sure? This parcel will be permanently deleted!"
+      "Are you sure? This parcel will be permanently deleted!",
     );
     if (confirm) {
       try {
-        axiosSecure.delete(`/business/${id}`).then((res) => {
-          if (res.data.deletedCount) {
-            toast.success("Parcel has been deleted.");
-          }
-          refetch();
-        });
-      } catch (err) {
-        toast.error(err.message || "Failed to delete parcel");
+        const res = await axiosSecure.delete(`/business/${id}`);
+        if (res.data.deletedCount) {
+          toast.success("Parcel has been deleted.");
+        }
+        refetch();
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : "Failed to delete parcel");
       }
     }
   };
 
-  const formatDate = (iso) => {
+  const formatDate = (iso?: string): string => {
     if (!iso) return "N/A";
-    return new Date(iso).toLocaleString(); // Format: "6/22/2025, 3:11:31 AM"
+    return new Date(iso).toLocaleString();
   };
 
   return (
@@ -89,7 +114,7 @@ const MyParcels = () => {
               </td>
               <td className="space-x-2">
                 <button
-                  onClick={() => handleView(parcel)} // Pass the full parcel object
+                  onClick={() => handleView(parcel)}
                   className="btn btn-xs btn-outline"
                 >
                   View
@@ -113,7 +138,7 @@ const MyParcels = () => {
           ))}
           {parcels.length === 0 && (
             <tr>
-              <td colSpan="7" className="text-center text-gray-500 py-6">
+              <td colSpan={7} className="text-center text-gray-500 py-6">
                 No parcels found.
               </td>
             </tr>
@@ -141,7 +166,7 @@ const MyParcels = () => {
               )}
               <p><strong>Cost:</strong> ৳{selectedParcel.cost}</p>
               <p><strong>Payment Status:</strong> <span className={`badge ${selectedParcel.payment_status === "paid" ? "badge-success" : "badge-error"}`}>{selectedParcel.payment_status}</span></p>
-              <p><strong>Delivery Status:</strong> <span className="capitalize">{selectedParcel.delivery_status.replace(/_/g, ' ')}</span></p>
+              <p><strong>Delivery Status:</strong> <span className="capitalize">{selectedParcel.delivery_status?.replace(/_/g, " ")}</span></p>
               <p><strong>Created By:</strong> {selectedParcel.created_by}</p>
               <p><strong>Creation Date:</strong> {formatDate(selectedParcel.creation_date)}</p>
               
