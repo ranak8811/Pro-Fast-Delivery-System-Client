@@ -6,7 +6,7 @@ import bannerImg1 from "../../../assets/banner/banner1.png";
 import bannerImg2 from "../../../assets/banner/banner2.png";
 import bannerImg3 from "../../../assets/banner/banner3.png";
 
-const Banner = () => {
+const Banner: React.FC = () => {
   return (
     <div className="w-full mt-4">
       <Carousel
