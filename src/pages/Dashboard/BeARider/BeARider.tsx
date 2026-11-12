@@ -1,31 +1,46 @@
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import Swal from "sweetalert2";
-
-import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { useLoaderData } from "react-router";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
-const BeARider = () => {
+interface ServiceCenterLocation {
+  region: string;
+  district: string;
+}
+
+interface RiderFormInputs {
+  age: number | string;
+  phone: string;
+  nid: string;
+  region: string;
+  district: string;
+  bike_brand: string;
+  bike_registration: string;
+  note?: string;
+}
+
+const BeARider: React.FC = () => {
   const { user } = useAuth();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<RiderFormInputs>();
 
   const [selectedRegion, setSelectedRegion] = useState("");
   const axiosSecure = useAxiosSecure();
 
-  const serviceCenters = useLoaderData();
+  const serviceCenters = (useLoaderData() as ServiceCenterLocation[]) || [];
 
   const regions = [...new Set(serviceCenters.map((s) => s.region))];
   const districts = serviceCenters
     .filter((s) => s.region === selectedRegion)
     .map((s) => s.district);
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<RiderFormInputs> = async (data) => {
     const riderData = {
       ...data,
       name: user?.displayName || "",
@@ -44,7 +59,6 @@ const BeARider = () => {
       }
     });
 
-    // Send to your backend here
     reset();
   };
 
