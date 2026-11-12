@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Loading from "../../../components/Loading";
+import useTitle from "../../../hooks/useTitle";
 
 const COLORS: Record<string, string> = {
   not_collected: "#F87171", // red-400
@@ -44,6 +45,7 @@ interface StatusCountItem {
 }
 
 export default function AdminDashboard(): React.ReactElement {
+  useTitle("Admin Dashboard");
   const axiosSecure = useAxiosSecure();
   const {
     data: deliveryStatus = [],
