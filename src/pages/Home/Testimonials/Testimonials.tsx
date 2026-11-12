@@ -1,10 +1,16 @@
 import React from "react";
-import Slider from "react-slick";
+import Slider, { CustomArrowProps, Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import reviewQuote from "../../../assets/reviewQuote.png";
 
-const testimonialsData = [
+interface TestimonialItem {
+  quote: string;
+  name: string;
+  role: string;
+}
+
+const testimonialsData: TestimonialItem[] = [
   {
     quote:
       "ProFast has been a game-changer for my small business. Their delivery is always on time, and the live tracking gives me peace of mind. Highly recommended!",
@@ -31,30 +37,30 @@ const testimonialsData = [
   },
 ];
 
-const NextArrow = (props) => {
+const NextArrow: React.FC<CustomArrowProps> = (props) => {
   const { className, style, onClick } = props;
   return (
     <div
-      className={`${className} bg-lime-400 rounded-full w-10 h-10 flex items-center justify-center`}
+      className={`${className || ""} bg-lime-400 rounded-full w-10 h-10 flex items-center justify-center`}
       style={{ ...style, display: "block" }}
       onClick={onClick}
     />
   );
 };
 
-const PrevArrow = (props) => {
+const PrevArrow: React.FC<CustomArrowProps> = (props) => {
   const { className, style, onClick } = props;
   return (
     <div
-      className={`${className} bg-lime-400 rounded-full w-10 h-10 flex items-center justify-center`}
+      className={`${className || ""} bg-lime-400 rounded-full w-10 h-10 flex items-center justify-center`}
       style={{ ...style, display: "block" }}
       onClick={onClick}
     />
   );
 };
 
-const Testimonials = () => {
-  const settings = {
+const Testimonials: React.FC = () => {
+  const settings: Settings = {
     dots: true,
     infinite: true,
     speed: 500,
