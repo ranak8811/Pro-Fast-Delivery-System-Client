@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 
 ChartJS.register(
@@ -19,7 +20,18 @@ ChartJS.register(
   Legend,
 );
 
-const SpendingHistoryChart = ({ spendingHistory }) => {
+export interface SpendingHistoryItem {
+  month: string;
+  amount: number;
+}
+
+interface SpendingHistoryChartProps {
+  spendingHistory: SpendingHistoryItem[];
+}
+
+const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
+  spendingHistory,
+}) => {
   const labels = spendingHistory.map((item) => item.month);
   const dataValues = spendingHistory.map((item) => item.amount);
 
@@ -36,11 +48,11 @@ const SpendingHistoryChart = ({ spendingHistory }) => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
       },
       title: {
         display: true,
